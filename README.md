@@ -10,7 +10,15 @@
 </p>
 
 ## The CHIMERA knowledge base
-**TODO**: add a brief description of the knowledge base & the project   
+CHIMERA is knowledge base of over 28K _real_ scientific recombination examples. 
+Recombination is the process of creating original ideas by integrating elements of existing mechanisms and concepts.
+<figure style="text-align: center;">
+  <img src="recombination_example.svg" alt="Description" width="700" align="center"/>
+  <figcaption>Recombination example</figcaption>
+</figure>
+
+We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature. You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
+
 ### Data
 **TODO**
 ## Getting Started
