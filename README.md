@@ -17,7 +17,8 @@ Recombination is the process of creating original ideas by integrating elements 
       <img src="recombination_example.svg" alt="Description" width="550" />
 </p>
 
-We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature. You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
+We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature. You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose! 
+Make sure to cite our paper as described [here](#Citation). 
 
 ### Data
 **TODO**
