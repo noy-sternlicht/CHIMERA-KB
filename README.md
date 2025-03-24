@@ -21,7 +21,15 @@ We build CHIMERA by automatically extracting examples of "recombination in actio
 Make sure to cite our paper as described [here](#Citation). 
 
 ### Data
-**TODO**
+`data/` contains contains a zip file with two directories:
+```aiignore
+├── human_annotated_data/  # Training and evaluation data of our extraction model  
+├── CHIMERA/               
+│   ├── raw_graph/         # The CHIMERA knowledge base
+│   └── train.csv/         # Recombination prediction training data
+|   └── valid.csv/         # Recombination prediction validation data
+|   └── test.csv/          # Recombination prediction test data (papers > 2024)
+```
 ## Getting Started
 **TODO**: Add prerequisites, run pip freeze when I'm done with the repo and add a requirement file here
 
