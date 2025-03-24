@@ -3,10 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg)](https://arxiv.org/abs/XXXX.XXXXX)
 
-<h1 align="center">CHIMERA: A Knowledge Base of Idea Recombination in Scientific Literature</h1>
+[//]: # (<h1 align="center">CHIMERA: A Knowledge Base of Idea Recombination in Scientific Literature</h1>)
 
 <p align="center">
-  <img src="chimera_logo.svg" alt="Centered Image" />
+  <img src="kb_logo.svg" alt="Centered Image" width="450" />
 </p>
 
 ## The CHIMERA knowledge base
