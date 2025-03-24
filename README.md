@@ -34,19 +34,24 @@ Make sure to cite our paper as described [here](#Citation).
 **TODO**: Add prerequisites, run pip freeze when I'm done with the repo and add a requirement file here
 
 ### Prerequisites
+* Python 3.11.2 or higher
+* Some code requires a GPU for training or evaluation.
+* Some code requires an OpenAI API key.
 
 ### Installation
 
 ```bash
 # Clone this repository
-git clone https://github.com/username/repository.git
+git clone https://github.cs.huji.ac.il/tomhope-lab/CHIMERA.git
 
 # Install dependencies
 pip install -r requirements.txt
+
+# Unzip the data
+unzip data/chimera_data.zip -d data
 ```
 
 ### Reproducing Results
-
 ```bash
 # Navigate to the code directory
 cd code
