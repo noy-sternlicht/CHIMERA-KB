@@ -32,8 +32,11 @@ The `data/` contains three zip files with the following contents:
 
 ### Prerequisites
 * Python 3.11.2 or higher
-* Some code requires a GPU for training or evaluation.
-* Some code requires an OpenAI API key.
+* [mistral-inference](https://github.com/mistralai/mistral-inference) installed.
+* In case you'd like to retrain mistral-based baselines, you'd also have to set up [mistral-finetune](https://github.com/mistralai/mistral-finetune).
+* Note that:
+  * Some code requires a GPU for training or evaluation.
+  * Some code requires an OpenAI API key.
 
 ### Installation
 
