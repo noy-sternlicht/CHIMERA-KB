@@ -21,7 +21,7 @@ We build CHIMERA by automatically extracting examples of "recombination in actio
 Make sure to cite our paper as described [here](#Citation). 
 
 ### Data
-`data/` contains contains three zip files:
+The `data/` contains three zip files with the following contents:
 ```aiignore
 ├── CHIMERA.zip                             # The CHIMERA knowledge base
 ├── recombination_extraction_data.zip       # train, test sets for recombination extraction
