@@ -41,21 +41,36 @@ The `data/` contains three zip files with the following contents:
 # Clone this repository
 git clone https://github.cs.huji.ac.il/tomhope-lab/CHIMERA.git
 
+# Recommended: Create and activate a virtual environment
+python3 -m venv myenv
+source ./myenv/bin/activate
+
 # Install dependencies
 pip install -r requirements.txt
-
-# Unzip the data
-unzip data/chimera_data.zip -d data
 ```
+
+### Setting up the OpenAI API
+Some experiments require an OpenAI API key. You can set it up by following the instructions [here](https://beta.openai.com/docs/developer-quickstart/).
+After you have the API key, create a simple text file `openai_api_key` in the root directory of the project and paste the key there. The code will automatically read the key from this file.
 
 ### Reproducing Results
-```bash
-# Navigate to the code directory
-cd code
+This part describe how to reproduce the results presented in our the paper.
 
-# Run the analysis
-python main.py
+#### Recombination Extraction
+```bash
+# Unzip the data
+unzip data/recombination_extraction_data.zip -d data/
+
+# Unzip checkpoints
+unzip models/extraction_models.zip -d models/
+
+# Run all extraction baselines. You can comment out the ones you don't want to run (for example, ones that require an OpenAI API key)
+chmod +x ./scripts/01_run_extraction_experiments.sh
+./scripts/01_run_extraction_experiments.sh
+
 ```
+
+
 
 ##  Citation
 

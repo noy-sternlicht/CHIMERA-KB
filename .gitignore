@@ -1,2 +1,5 @@
 .idea/
 .DS_Store
+openai_key
+data/recombination_extraction_data
+models/extraction_models
