@@ -67,10 +67,9 @@ unzip data/recombination_extraction_data.zip -d data/
 # Unzip checkpoints
 unzip models/extraction_models.zip -d models/
 
-# Run all extraction baselines. You can comment out the ones you don't want to run (for example, ones that require an OpenAI API key)
-chmod +x ./scripts/01_run_extraction_experiments.sh
-./scripts/01_run_extraction_experiments.sh
-
+# Run in context learning gpt extraction baselines
+chmod +x scripts/extraction_experiments/run_gpt_icl_extraction.sh
+.scripts/extraction_experiments/run_gpt_icl_extraction.sh
 ```
 
 
