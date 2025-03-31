@@ -11,12 +11,6 @@ activate() {
 set_env_vars() {
   PYTHONPATH=$PWD/src
   export PYTHONPATH
-
-  HF_DATASETS_CACHE=$PWD/.datasets_cache
-  export HF_DATASETS_CACHE
-
-  HF_HOME=$PWD/.hf_home
-  export HF_HOME
 }
 
 activate
