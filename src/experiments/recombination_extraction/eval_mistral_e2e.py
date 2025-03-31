@@ -15,7 +15,6 @@ from tqdm import tqdm
 from util import setup_default_logger, NER_ENTITY_TYPES_ATTRIBUTES
 from eval import eval_rel_extraction, Relation, RelationEntity, compute_entity_agreement
 
-
 PROMPT_E2E = """You are an AI assistant tasked with analyzing scientific abstracts for idea recombination. Your goal is to identify the most salient recombination in the given abstract and format it as a JSON string. Follow these instructions carefully:
 
 1. First, familiarize yourself with the possible entity types for recombinations:
@@ -218,7 +217,6 @@ def process_data_e2e(test_data: pd.DataFrame):
     return pd.DataFrame(processed_examples)
 
 
-
 def main(eval_path: str, base_model_path: str, trained_model_path: str):
     test_examples = pd.read_csv(eval_path, dtype={'paper_id': str})
     logger.info(f"Loaded {len(test_examples)} test examples from {eval_path}")
@@ -273,20 +271,28 @@ def main(eval_path: str, base_model_path: str, trained_model_path: str):
         gold_entities.append(doc_gold_entities)
         pbar.update(1)
 
-    rel_results, ent_results, class_results = eval_rel_extraction(pred_rels, gold_rels, texts,
-                                                                  ['combination', 'inspiration', 'citation'],
-                                                                  entity_types,
-                                                                  logger, 0.6)
+    rel_results, _, class_results = eval_rel_extraction(pred_rels, gold_rels, texts,
+                                                        ['combination', 'inspiration', 'citation'],
+                                                        entity_types,
+                                                        logger, 0.6)
 
-    entity_results_other_method = compute_entity_agreement(pred_entities, gold_entities, texts,
-                                                           ['comb-element', 'inspiration-src', 'inspiration-target'],
-                                                           logger)
+    rel_results = {"precision": rel_results['avg']['precision'], "recall": rel_results['avg']['recall'],
+                   "f1": rel_results['avg']['f1']}
+    class_results = {"precision": class_results['avg']['precision'], "recall": class_results['avg']['recall'],
+                     "f1": class_results['avg']['f1']}
 
-    logger.info(f"Relation extraction results:\n{rel_results}")
-    logger.info(f"Entity results:\n{ent_results}")
-    logger.info(f"Entity results (other method):\n{entity_results_other_method}")
-    logger.info(f"Classification results:\n{class_results}")
+    entity_results = compute_entity_agreement(pred_entities, gold_entities, texts,
+                                              ['comb-element', 'inspiration-src', 'inspiration-target'],
+                                              logger)
 
+    entity_results = {"precision": entity_results['avg']['precision'], "recall": entity_results['avg']['recall'],
+                      "f1": entity_results['avg']['f1']}
+
+    total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
+                     'classification': class_results}
+
+
+    logger.info(f"\n-----\nMistral E2E: {json.dumps(total_results, indent=4)}\n-----")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

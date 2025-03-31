@@ -21,6 +21,7 @@ We build CHIMERA by automatically extracting examples of "recombination in actio
 Make sure to cite our paper as described [here](#Citation). 
 
 ### Data
+**TODO**: update
 The `data/` contains three zip files with the following contents:
 ```aiignore
 ├── CHIMERA.zip                             # The CHIMERA knowledge base
@@ -32,10 +33,6 @@ The `data/` contains three zip files with the following contents:
 
 ### Prerequisites
 * Python 3.11.2 or higher
-* [mistral-inference](https://github.com/mistralai/mistral-inference) installed.
-  * We use https://models.mistralcdn.com/mistral-7b-v0-3/mistral-7B-Instruct-v0.3.tar as the base model for all our experiments.
-  * In case you'd like to retrain mistral-based baselines, you'd also have to set up [mistral-finetune](https://github.com/mistralai/mistral-finetune).
-* In case you want to reproduce the GoLLIE extraction results - follow the [GoLLIE](https://github.com/hitz-zentroa/GoLLIE) repository installation instructions first.
 * Note that:
   * Some code requires a GPU for training or evaluation.
   * Some code requires an OpenAI API key.
@@ -64,10 +61,10 @@ After you have the API key, create a simple text file `openai_api_key` in the ro
 ### Setting up the HuggingFace API
 Some experiments require an HuggingFace API key. Set it up by creating a similar text file `huggingface_api_key` in the root directory of the project and paste the key there. The code will automatically read the key from this file.
 
-### Reproducing Results
+## Reproducing Results
 This part describe how to reproduce the results presented in our the paper.
 
-#### Recombination Extraction
+### Recombination extraction
 ```bash
 # Unzip the data
 unzip data/recombination_extraction_data.zip -d data/
@@ -76,12 +73,32 @@ unzip data/recombination_extraction_data.zip -d data/
 unzip models/extraction_models.zip -d models/
 
 # Now, run the relevant script from scripts/extraction_experiments. For example:
-chmod +x scripts/extraction_experiments/run_gpt_icl_extraction.sh
-.scripts/extraction_experiments/run_gpt_icl_extraction.sh
+chmod +x ./scripts/extraction_experiments/run_gpt_icl_extraction.sh
+./scripts/extraction_experiments/run_gpt_icl_extraction.sh
 ```
 ##### PURE Extraction
 We use [PURE](https://github.com/princeton-nlp/PURE) as one of our extractive baselines. Reproducing its results requires a few more steps, since the repository code isn't compatible with python>3.7 
 
+### Knowledge base analysis
+Run the following to generate the tables and csv files used to create the analysis figures in the paper.
+```bash
+# Unzip the data
+unzip data/CHIMERA.zip -d data/
+
+chmod +x scripts/analyse_kb.sh
+./scripts/analyse_kb.sh
+````
+
+### Prediction experiments
+**TODO**: add an unzip models step
+
+```bash
+# Unzip the data
+unzip data/recombination_prediction_data.zip -d data/
+
+```
+
+## Citation
 If you use this code or data in your research, please cite our paper:
 
 ```bibtex

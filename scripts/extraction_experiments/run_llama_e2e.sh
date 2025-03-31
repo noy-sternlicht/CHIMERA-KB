@@ -15,14 +15,8 @@ set_env_vars() {
   PYTHONPATH=$PWD/src
   export PYTHONPATH
 
-  HF_DATASETS_CACHE=$PWD/.datasets_cache
-  export HF_DATASETS_CACHE
-
   HF_HOME=$PWD/.hf_home
   export HF_HOME
-
-  LLAMA_MODEL_DIR=$PWD/.llama_models
-  export LLAMA_MODEL_DIR
 }
 
 activate
@@ -43,4 +37,4 @@ python3 src/experiments/recombination_extraction/llama_e2e.py \
   --lr 2e-5 \
   --weight_decay 0.01 \
   --hf_key_path huggingface_api_key \
-  --checkpoint "simple_hf_finetune/meta-llama/Llama-3.1-8B-Instruct-2025-03-27-14-04/best_checkpoint_meta-llama/Llama-3.1-8B-Instruct-2025-03-27-14-04"
+  --checkpoint "models/extraction_models/checkpoints/llama-8b"

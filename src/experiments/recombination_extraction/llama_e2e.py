@@ -438,7 +438,7 @@ def main():
                      'classification': class_results}
 
 
-    logger.info(f"\n-----\nICL E2E GPT: {json.dumps(total_results, indent=4)}\n-----")
+    logger.info(f"\n-----\nLlama E2E: {json.dumps(total_results, indent=4)}\n-----")
 
 
 if __name__ == '__main__':

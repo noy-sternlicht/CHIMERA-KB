@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 
 import pandas as pd
@@ -100,7 +101,21 @@ def main(eval_path: str, tokenizer_path: str, model_path: str, lora_path: str):
 
     classes = ['relevant', 'irrelevant']
     metrics = compute_metrics(predicted_classes=pred_classes, reference_classes=gold_classes, classes=classes)
-    logger.info(f"Metrics: {metrics}")
+
+    metrics_by_category = {}
+    for category in ['relevant', 'irrelevant']:
+        metrics_by_category[category] = {k.split(f'{category}_')[-1]: v for k, v in metrics.items() if
+                                         k.startswith(category)}
+
+    mean_f1 = sum([metrics_by_category[category]['f1'] for category in classes]) / len(classes)
+    mean_precision = sum([metrics_by_category[category]['precision'] for category in classes]) / len(classes)
+    mean_recall = sum([metrics_by_category[category]['recall'] for category in classes]) / len(classes)
+
+    mean_metrics = {'precision': mean_precision, 'recall': mean_recall, 'f1': mean_f1}
+    model_name = 'Mistral-'
+    if args.is_cot:
+        model_name = 'COT-'
+    logger.info(f"\n-----\n{model_name}-Classifier: {json.dumps(mean_metrics, indent=4)}\n-----")
 
 
 if __name__ == '__main__':
@@ -110,6 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--model_path', type=str, required=True)
     parser.add_argument('--lora_path', type=str, required=True)
     parser.add_argument('--output_dir', type=str, required=True)
+    parser.add_argument('--is-cot', action='store_true')
 
     args = parser.parse_args()
     logger = setup_default_logger(args.output_dir)
