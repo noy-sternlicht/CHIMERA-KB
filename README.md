@@ -48,6 +48,10 @@ git clone https://github.cs.huji.ac.il/tomhope-lab/CHIMERA.git
 python3 -m venv myenv
 source ./myenv/bin/activate
 
+# Clone external baselines
+git clone https://github.com/mistralai/mistral-finetune.git
+git clone https://github.com/hitz-zentroa/GoLLIE.git
+
 # Install dependencies
 pip install --upgrade pip setuptools wheel
 pip install torch==2.5.1

@@ -1,10 +1,7 @@
 #!/bin/bash -x
-#SBATCH --time=15:00:00
-#SBATCH --gres=gpu:1,vmem:48G
+#SBATCH --time=30:00:00
+#SBATCH --gres gg:g4
 #SBATCH --mem-per-cpu=20g
-#SBATCH --mail-user=noy.sternlicht@mail.huji.ac.il
-#SBATCH --mail-type=ALL
-#SBATCH --job-name=hf-finetune
 
 echo $PWD
 activate() {
