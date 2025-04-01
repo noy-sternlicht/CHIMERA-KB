@@ -146,7 +146,7 @@ python3 src/experiments/recombination_prediction/finetune_sent_transformer_bienc
   --checkpoint '' \  # path to a checkpoint to load, remove if training from scratch
   --zero_shot          # remove if training from scratch
 ```
-
+**TODO**: mention rankgpt prompt changes
 ## Citation
 If you use this code or data in your research, please cite our paper:
 
