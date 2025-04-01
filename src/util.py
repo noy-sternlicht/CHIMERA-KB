@@ -1,7 +1,8 @@
 import json
 import os
-from typing import Dict, Tuple
+from typing import Dict, Tuple, List
 import logging
+import nltk
 import pandas as pd
 from datetime import datetime
 from colorama import Fore, Style
@@ -29,6 +30,28 @@ NER_ENTITY_TYPES_ATTRIBUTES = [
     }
 ]
 
+def map_chars_into_words(text_words: List[str], text: str) -> Dict[int, int]:
+    char_to_word_index = {}
+    current_char_index = 0
+
+    text = text.replace("``", '"').replace("''", '"')
+    for i, word in enumerate(text_words):
+        current_char_index = text.find(word, current_char_index)
+        if current_char_index == -1:
+            raise ValueError(
+                f"Tokenization error: Unable to find [word={word}]\n"
+                f"in the text:\n{text}.\n"
+                f"Text words are:\n{text_words}\n"
+            )
+        char_to_word_index[current_char_index] = i
+        current_char_index += len(word)
+    return char_to_word_index
+
+def word_tokenize_text(text: str) -> List[str]:
+    word_tokens = nltk.word_tokenize(text)
+    # Undoing the tokenization of opening and closing quotes
+    word_tokens = [word.replace("``", '"').replace("''", '"') for word in word_tokens]
+    return word_tokens
 
 
 def create_out_dir(output_dir: str) -> None:

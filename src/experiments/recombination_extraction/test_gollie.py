@@ -75,13 +75,23 @@ def main():
                                                          'inspiration-target'],
                                                         logger, 0.6)
 
+    rel_results = {"precision": rel_results['avg']['precision'], "recall": rel_results['avg']['recall'],
+                   "f1": rel_results['avg']['f1']}
+    class_results = {"precision": class_results['avg']['precision'], "recall": class_results['avg']['recall'],
+                     "f1": class_results['avg']['f1']}
+
     entity_results = compute_entity_agreement(pred_entities, gold_entities, texts,
                                               ['comb-element', 'inspiration-src', 'inspiration-target'],
                                               logger)
 
-    logger.info(f"Relation extraction results:\n{rel_results}")
-    logger.info(f"Entity results:\n{entity_results}")
-    logger.info(f"Classification results:\n{class_results}")
+    entity_results = {"precision": entity_results['avg']['precision'], "recall": entity_results['avg']['recall'],
+                      "f1": entity_results['avg']['f1']}
+
+    total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
+                     'classification': class_results}
+
+    logger.info(f"\n-----\nGoLLIE Results: {json.dumps(total_results, indent=4)}\n-----")
+
 
 
 if __name__ == '__main__':

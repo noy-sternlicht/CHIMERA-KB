@@ -5,18 +5,24 @@ import uuid
 from datetime import datetime
 from typing import List, Dict, Tuple
 import numpy as np
-import torch
 from huggingface_hub import login
-from peft import LoraConfig, TaskType, PeftModel
 from scipy.special import softmax
 
 import pandas as pd
 import nltk
 import transformers
 from datasets import Dataset
-from transformers import AutoModelForTokenClassification, AutoTokenizer, EvalPrediction, BitsAndBytesConfig
-from util import sent_tokenize_text, word_tokenize_text, map_chars_into_words, \
-    setup_default_logger, calculate_entity_bertscore_at_percent, preprocess_split_for_abstract_only, preprocess_split_selected_entity_types, RelationEntity, compute_entity_agreement
+from transformers import AutoModelForTokenClassification, AutoTokenizer, EvalPrediction
+from util import word_tokenize_text, map_chars_into_words, setup_default_logger
+
+from eval import RelationEntity, compute_entity_agreement
+
+id2label = {
+    0: "comb-element",
+    1: "analogy-src",
+    2: "analogy-target",
+    3: "other"
+}
 
 
 def parse_predictions(predictions: np.ndarray, labels: np.ndarray) -> (
@@ -43,9 +49,9 @@ def parse_predictions(predictions: np.ndarray, labels: np.ndarray) -> (
 
 
 class TokenClassifier:
-    def __init__(self, model_name: str, model_conf: Dict, id2label: Dict[int, str],
-                 data_splits: Dict[str, pd.DataFrame]):
-        login(token="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")
+    def __init__(self, model_name: str, data_splits: Dict[str, pd.DataFrame]):
+        self.token = open(args.hf_token).read().strip()
+        login(token=self.token)
         self.id2label = id2label
         self.label2id = {v: k for k, v in self.id2label.items()}
         self.model_name = model_name
@@ -54,7 +60,7 @@ class TokenClassifier:
         self.tokenized_datasets = self.init_datasets(data_dfs=data_splits)
 
         self.run_name = f"{self.model_name}-{datetime.now().strftime('%Y-%m-%d-%H-%M')}"
-        self.out_dir = os.path.join(model_conf['out_dir'], self.run_name)
+        self.out_dir = os.path.join(args.output_dir, self.run_name)
         if not os.path.exists(self.out_dir):
             os.makedirs(self.out_dir)
 
@@ -63,11 +69,9 @@ class TokenClassifier:
         tokenizer = AutoTokenizer.from_pretrained(self.model_name, **tokenizer_init_args)
         if not hasattr(tokenizer, 'model_max_length') or tokenizer.model_max_length is None:
             tokenizer.model_max_length = 512
-        # tokenizer.pad_token = tokenizer.eos_token
-        # tokenizer.pad_token_id = tokenizer.eos_token_id
         return tokenizer
 
-    def get_model_init_args(self, qlora=False) -> Dict:
+    def get_model_init_args(self) -> Dict:
 
         model_init_args = {"device_map": None,
                            "pad_token_id": self.tokenizer.pad_token_id,
@@ -75,17 +79,6 @@ class TokenClassifier:
                            "id2label": self.id2label,
                            "label2id": self.label2id,
                            }
-
-        if qlora:
-            quant_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_quant_type="nf4",
-                bnb_4bit_compute_dtype=getattr(torch, "float16"),
-                bnb_4bit_use_double_quant=True
-            )
-
-            model_init_args["quant_config"] = quant_config
-            model_init_args["torch_dtype"] = torch.bfloat16,
 
         return model_init_args
 
@@ -182,16 +175,7 @@ class TokenClassifier:
 
         return metrics
 
-    def init_trainer(self, train_dataset: Dataset, model_init, inference_mode: bool,
-                     qlora=False) -> transformers.Trainer:
-        peft_params = LoraConfig(
-            r=64,
-            lora_alpha=16,
-            lora_dropout=0.1,
-            bias="none",
-            inference_mode=inference_mode,
-            task_type=TaskType.TOKEN_CLS,
-        )
+    def init_trainer(self, train_dataset: Dataset, model_init, inference_mode: bool) -> transformers.Trainer:
 
         training_args = transformers.TrainingArguments(output_dir=self.out_dir,
                                                        gradient_checkpointing=True,
@@ -208,19 +192,7 @@ class TokenClassifier:
                                                        warmup_ratio=0.1
                                                        )
 
-        if qlora:
-            def qlora_model_init():
-                model = model_init()
-                model = PeftModel(model, peft_params)
-                model.print_trainable_parameters()
-                return model
-
-            model_init_func = model_init if inference_mode else qlora_model_init
-            training_args.bf16 = True
-
-        else:
-            model_init_func = model_init
-
+        model_init_func = model_init
         initialized_model = model_init_func()
 
         trainer = transformers.Trainer(
@@ -234,102 +206,7 @@ class TokenClassifier:
 
         return trainer
 
-    def init_hpo_trainer(self, training_dataset: Dataset, eval_dataset: Dataset) -> transformers.Trainer:
-        training_args = transformers.TrainingArguments(output_dir=self.out_dir,
-                                                       gradient_checkpointing=True,
-                                                       gradient_accumulation_steps=4,
-                                                       gradient_checkpointing_kwargs={"use_reentrant": False},
-                                                       optim="paged_adamw_8bit",
-                                                       per_device_train_batch_size=1,
-                                                       num_train_epochs=10,
-                                                       weight_decay=0.1,
-                                                       lr_scheduler_type="cosine",
-                                                       learning_rate=6.e-5,
-                                                       logging_steps=10,
-                                                       run_name="test",
-                                                       warmup_ratio=0.1
-                                                       )
-
-        def model_init(trial):
-            model_args = self.get_model_init_args()
-            return AutoModelForTokenClassification.from_pretrained(self.model_name, **model_args)
-
-        trainer = transformers.Trainer(
-            model=None,
-            model_init=model_init,
-            args=training_args,
-            data_collator=self.data_collator,
-            train_dataset=training_dataset,
-            eval_dataset=eval_dataset,
-            tokenizer=self.tokenizer,
-            compute_metrics=self.compute_metrics
-        )
-        return trainer
-
-    def train_with_hpo(self, nr_trials: int) -> Tuple[str, Dict]:
-        logger.info(f'Starting hyperparameter optimization with {nr_trials} trials')
-
-        def optuna_hp_space(trial):
-            return {
-                "learning_rate": trial.suggest_float("learning_rate", 1e-6, 1e-4, log=True),
-                "per_device_train_batch_size": trial.suggest_categorical("per_device_train_batch_size",
-                                                                         [1, 2, 4, 8]),
-                "num_train_epochs": trial.suggest_int("num_train_epochs", 2, 10),
-                "weight_decay": trial.suggest_float("weight_decay", 1e-6, 1e-3, log=True),
-            }
-
-        def compute_objective(metrics: Dict[str, float]) -> float:
-            labels_precision = []
-            labels_recall = []
-
-            for label_name in self.id2label.values():
-                if label_name == 'other':
-                    continue
-                label_precision = metrics[f'eval_{label_name}_precision']
-                if label_precision != -1:
-                    labels_precision.append(label_precision)
-                label_recall = metrics[f'eval_{label_name}_recall']
-                if label_recall != -1:
-                    labels_recall.append(label_recall)
-
-            avg_precision = sum(labels_precision) / len(labels_precision) if len(labels_precision) > 0 else -1
-            avg_recall = sum(labels_recall) / len(labels_recall) if len(labels_recall) > 0 else -1
-
-            if avg_precision == -1 or avg_recall == -1:
-                return 0
-
-            avg_f1 = 2 * avg_precision * avg_recall / (
-                    avg_precision + avg_recall) if avg_precision + avg_recall > 0 else 0
-            return avg_f1
-
-        trainer = self.init_hpo_trainer(self.tokenized_datasets['train'], self.tokenized_datasets['valid'])
-
-        hpo_res = trainer.hyperparameter_search(
-            direction="maximize",
-            backend="optuna",
-            hp_space=optuna_hp_space,
-            compute_objective=compute_objective,
-            n_trials=nr_trials,
-        )
-
-        best_run_params = hpo_res.hyperparameters
-        logger.info(f'Best run params: {best_run_params}')
-
-        trainer.args.learning_rate = best_run_params['learning_rate']
-        trainer.args.weight_decay = best_run_params['weight_decay']
-        trainer.args.num_train_epochs = best_run_params['num_train_epochs']
-        trainer.args.per_device_train_batch_size = best_run_params['per_device_train_batch_size']
-
-        trainer.train()
-        best_checkpoint_path = os.path.join(self.out_dir, f'best_checkpoint_{self.run_name}')
-        trainer.save_model(best_checkpoint_path)
-        logger.info(f'Model saved to {best_checkpoint_path}')
-
-        # metrics = self.eval_model(trainer, ['test'])
-
-        return best_checkpoint_path, {}
-
-    def finetune_model(self, at_k_values=(0.25, 0.5, 1.0)) -> Tuple[str, Dict[str, Dict]]:
+    def finetune_model(self) -> Tuple[str, Dict[str, Dict]]:
         def init_model():
             model_args = self.get_model_init_args()
             return AutoModelForTokenClassification.from_pretrained(self.model_name, **model_args)
@@ -340,7 +217,7 @@ class TokenClassifier:
         trainer.save_model(best_checkpoint_path)
         logger.info(f'Saved best checkpoint to: {best_checkpoint_path}')
 
-        metrics = self.eval_model(trainer, ['test'], at_k_values)
+        metrics = self.eval_model(trainer, ['test'])
         return best_checkpoint_path, metrics
 
     def parse_results(self, raw_results: List[Dict], id2label: Dict[int, str]) -> List[Dict]:
@@ -378,10 +255,9 @@ class TokenClassifier:
 
             parsed_results.append(res)
 
-        # parsed_results = postprocess_entity_predictions(parsed_results, self.out_dir)
         return parsed_results
 
-    def eval_model(self, trainer, eval_splits, at_k_values: List[float]) -> Dict:
+    def eval_model(self, trainer, eval_splits) -> Dict:
         results = {split_name: [] for split_name in eval_splits}
         metrics = {}
         for split_name in eval_splits:
@@ -428,27 +304,32 @@ class TokenClassifier:
                 logger.info(
                     f'------\nPredicted Entities: {res["readable_entities"]}\nTrue Entities: {res["gold_entities"]}\n------\n')
 
-            
-            entity_results = compute_entity_agreement(pred_ent_objects, docs_gold_ents_objects, texts, list(self.id2label.values()), logger)
-            print(f'Entity results: {entity_results}')
+            entity_results = compute_entity_agreement(pred_ent_objects, docs_gold_ents_objects, texts,
+                                                      list(self.id2label.values()), logger)
 
-            for k in at_k_values:
-                bertscore_at_k = calculate_entity_bertscore_at_percent(docs_pred_ents, docs_gold_ents, texts,
-                                                                       list(self.id2label.values()), percent=k)
-                readable_results += f'BERT score at {k}: {bertscore_at_k}\n'
-                for ent_type, ent_scores in bertscore_at_k.items():
-                    for metric_name, metric_value in ent_scores.items():
-                        metrics[split_name].update({f'{ent_type}_{metric_name}_at_{k}': metric_value})
+            entity_types = ['comb-element', 'analogy-src', 'analogy-target']
+
+            mean_results = {'precision': 0, 'recall': 0, 'f1': 0}
+            for entity_type, results in entity_results.items():
+                if entity_type not in entity_types:
+                    continue
+                mean_results['precision'] += results['precision']
+                mean_results['recall'] += results['recall']
+                mean_results['f1'] += results['f1']
+            mean_results['precision'] /= len(entity_types)
+            mean_results['recall'] /= len(entity_types)
+            mean_results['f1'] /= len(entity_types)
+
+            logger.info(f"\n-----\nToken Classifier Results:\n{json.dumps(mean_results, indent=2)}\n------")
+
             readable_res_out_path = os.path.join(self.out_dir, f'{split_name}_readable_results.txt')
             with open(readable_res_out_path, 'w') as out_file:
                 out_file.write(readable_results)
             logger.info(f'Saved {split_name} readable results to: {readable_res_out_path}')
-            logger.info(f'Metrics: {metrics}')
 
         return metrics
 
-    def eval_model_from_checkpoint(self, model_checkpoint: str, eval_splits: List[str],
-                                   at_k_values=(0.25, 0.5, 1.0)) -> Dict[str, Dict]:
+    def eval_model_from_checkpoint(self, model_checkpoint: str, eval_splits: List[str]) -> Dict[str, Dict]:
         assert os.path.exists(model_checkpoint), f"File {model_checkpoint} does not exist"
 
         def init_model():
@@ -458,15 +339,11 @@ class TokenClassifier:
 
         trainer = self.init_trainer(self.tokenized_datasets['train'], init_model, inference_mode=True)
 
-        return self.eval_model(trainer, eval_splits, at_k_values)
+        return self.eval_model(trainer, eval_splits)
 
 
-def init_token_classifier(model_name: str, model_conf_path: str, id2label: Dict[int, str],
-                          data_splits: Dict[str, pd.DataFrame], epoch_nr=1) -> TokenClassifier:
-    assert os.path.exists(model_conf_path), f"File {model_conf_path} does not exist"
-    model_conf = json.load(open(model_conf_path, 'r'))[model_name]
-    model_conf['out_dir'] = os.path.join(model_conf['out_dir'], f'epoch_{epoch_nr}')
-    return TokenClassifier(model_name=model_name, model_conf=model_conf, id2label=id2label, data_splits=data_splits)
+def init_token_classifier(model_name: str, data_splits: Dict[str, pd.DataFrame]) -> TokenClassifier:
+    return TokenClassifier(model_name=model_name, data_splits=data_splits)
 
 
 def get_ner_annotations_from_tagged_words(predicted_labels: List[int], predicted_labels_prob: list[float],
@@ -523,131 +400,41 @@ def map_word_tokens_indices_to_char_indices(text: str) -> Dict[int, Dict]:
     return word_tokens_info
 
 
-def run_finetune_pipeline(config: Dict, data_splits: Dict[str, pd.DataFrame]):
-    run_hpo = config['run_hpo']
-    nr_trials = config['nr_hpo_trials']
-    model_name = config['model_name']
-    model_conf_path = config['models_configs_path']
-    id2label = config['id2label']
-    id2label = {int(k): v for k, v in id2label.items()}
-    if config['synth_data']['enabled']:
-        all_data = pd.concat([data_splits['train'], data_splits['valid'], data_splits['test']])
-        synth_data = get_synth_data(config)
-        all_data = all_data[~all_data['paper_id'].isin(synth_data['paper_id'])].sample(frac=1).reset_index(drop=True)
-        data_splits['valid'] = all_data.iloc[:len(all_data) // 2].sample(frac=1).reset_index(drop=True)
-        data_splits['test'] = all_data.iloc[len(all_data) // 2:].sample(frac=1).reset_index(drop=True)
-        data_splits['train'] = synth_data.sample(frac=1).reset_index(drop=True)
-
-    if run_hpo:
-        token_classifier = init_token_classifier(model_name, model_conf_path, id2label, data_splits)
-        token_classifier.train_with_hpo(nr_trials)
-    else:
-        data_splits = {'train': data_splits['train'], 'test': data_splits['eval']}
-        token_classifier = init_token_classifier(model_name, model_conf_path, id2label, data_splits)
-        checkpoint, metrics = token_classifier.finetune_model(config['eval_at_k'])
-        logger.info(f'Finetuning metrics: {metrics}')
+def run_finetune_pipeline(data_splits: Dict[str, pd.DataFrame]):
+    model_name = args.model_name
+    data_splits = {'train': data_splits['train'], 'test': data_splits['eval']}
+    token_classifier = init_token_classifier(model_name, data_splits)
+    token_classifier.finetune_model()
 
 
-def get_synth_data(config: Dict) -> pd.DataFrame:
-    synth_data = pd.read_csv(config['synth_data']['synth_data_path'], dtype={'paper_id': str})
-    synth_data_seed = synth_data[~synth_data['paper_id'].str.contains('synth')]
-    non_seed_synth_data = synth_data[synth_data['paper_id'].str.contains('synth')]
-    sample_size = config['synth_data']['nr_synth_examples']
-    logger.info(f'Loaded {len(non_seed_synth_data)} non-seed synthetic examples')
-    non_seed_synth_data = non_seed_synth_data.sample(sample_size)
-    logger.info(f'Sampled {len(non_seed_synth_data)} non-seed synthetic examples')
-
-    synth_data = pd.concat([synth_data_seed, non_seed_synth_data])
-    logger.info(f'Loaded {len(synth_data)} synthetic examples')
-    return synth_data
-
-
-def run_cross_val_pipeline(config: Dict, data_splits: Dict[str, pd.DataFrame]):
-    cross_val_fold_num = config['k_fold_cross_val']
-    model_name = config['model_name']
-    model_conf_path = config['models_configs_path']
-    id2label = config['id2label']
-    id2label = {int(k): v for k, v in id2label.items()}
-    all_data = pd.concat([data_splits['train'], data_splits['valid'], data_splits['test']])
-    all_data = all_data.sample(frac=1).reset_index(drop=True)
-    synth_data = pd.DataFrame()
-    pre_synth_fold_size = len(all_data) // cross_val_fold_num
-    if config['synth_data']['enabled']:
-        synth_data = get_synth_data(config)
-        all_data = all_data[~all_data['paper_id'].isin(synth_data['paper_id'])]
-        all_data = all_data.sample(frac=1).reset_index(drop=True)
-
-    after_synth_fold_size = len(all_data) // cross_val_fold_num
-    nr_missing_test_examples = pre_synth_fold_size - after_synth_fold_size
-    metrics = []
-    out_text = ""
-
-    for fold_num in range(cross_val_fold_num):
-        logger.info(f'Running fold {fold_num + 1}/{cross_val_fold_num}')
-        fold_data = all_data.iloc[fold_num * after_synth_fold_size:(fold_num + 1) * after_synth_fold_size]
-        other_data = all_data.drop(fold_data.index)
-        if nr_missing_test_examples > 0:
-            other_data, missing_test_examples = other_data.iloc[:-nr_missing_test_examples], other_data.iloc[
-                                                                                             -nr_missing_test_examples:]
-            fold_data = pd.concat([fold_data, missing_test_examples])
-        other_data = pd.concat([other_data, synth_data]).sample(frac=1).reset_index(drop=True)
-        data_splits = {'train': other_data, 'test': fold_data}
-        token_classifier = init_token_classifier(model_name, model_conf_path, id2label, data_splits, epoch_nr=fold_num)
-        _, fold_metrics = token_classifier.finetune_model()
-        metrics.append(fold_metrics['test'])
-
-    aggregated_metrics = {}
-    for fold_metrics in metrics:
-        for metric_name, metric_value in fold_metrics.items():
-            aggregated_metrics[metric_name] = aggregated_metrics.get(metric_name, [])
-            if metric_value != -1:
-                aggregated_metrics[metric_name].append(metric_value)
-
-    for metric_name, metric_values in aggregated_metrics.items():
-        aggregated_metrics[metric_name] = np.mean(metric_values)
-
-    logger.info(f'Aggregated metrics: {aggregated_metrics}')
-    out_text += json.dumps(aggregated_metrics) + '\n'
-
-    results_path = os.path.join(config['output_dir'], 'cross_val_results.txt')
-    logger.info(f'Saving cross validation results to: {results_path}')
-    with open(results_path, 'w') as out_file:
-        out_file.write(out_text)
-
-
-def main(config: Dict):
-    data_dir = config['data_dir']
-    data_splits = {'train': None, 'valid': None, 'test': None, 'eval': None}
+def main():
+    data_dir = args.data_dir
+    data_splits = {'train': None, 'eval': None}
     for split_name in data_splits.keys():
         split_path = os.path.join(data_dir, f'{split_name}.csv')
         split_data = pd.read_csv(split_path, dtype={'paper_id': str})
-        selected_entity_types = config.get('id2label', {}).values()
-        selected_entity_types = [entity_type for entity_type in selected_entity_types if entity_type != 'other']
-        data_splits[split_name] = preprocess_split_selected_entity_types(split_data, selected_entity_types)
+        data_splits[split_name] = split_data
 
-    cross_val_fold_num = config.get('k_fold_cross_val', 1)
-    if cross_val_fold_num == 1:
-        run_finetune_pipeline(config, data_splits)
-    else:
-        run_cross_val_pipeline(config, data_splits)
+    data_splits['eval'] = data_splits['eval'].head(5)
+
+    run_finetune_pipeline(data_splits)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config-path', help='Path to the JSON configuration file')
+    parser.add_argument('--output_dir', type=str)
+    parser.add_argument('--data_dir', type=str)
+    parser.add_argument('--model_name', type=str)
+    parser.add_argument('--hf_token', type=str, default='huggingface_api_key')
     args = parser.parse_args()
 
-    assert os.path.exists(args.config_path)
-    config_dict = json.load(open(args.config_path, 'r'))
-    out_path = config_dict['output_dir']
-    logger = setup_default_logger(out_path)
+    logger = setup_default_logger(args.output_dir)
 
     NO_ANNOTATION_LABEL = -1
-    for label, val in config_dict['id2label'].items():
+    for label, val in id2label.items():
         if val == 'other':
             NO_ANNOTATION_LABEL = int(label)
             logger.info(f'No annotation label: {NO_ANNOTATION_LABEL}')
             break
 
-
-    main(config_dict)
+    main()

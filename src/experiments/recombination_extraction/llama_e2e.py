@@ -453,7 +453,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float)
     parser.add_argument('--weight_decay', type=float)
     parser.add_argument('--batch_size', type=int)
-    parser.add_argument('--hf_key_path', type=str)
+    parser.add_argument('--hf_key_path', type=str, default='huggingface_api_key')
     parser.add_argument('--checkpoint_path', type=str, default='')
     parser.add_argument('--entity_types', default=["comb-element",
                                                    "analogy-src",

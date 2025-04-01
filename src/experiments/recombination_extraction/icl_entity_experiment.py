@@ -247,6 +247,8 @@ def main(icl_examples_path: str, eval_examples_path: str, entity_types: List[str
         mean_results['recall'] += entity_results[entity_type]['recall']
         mean_results['f1'] += entity_results[entity_type]['f1']
     mean_results['precision'] /= len(fixed_entity_types)
+    mean_results['recall'] /= len(fixed_entity_types)
+    mean_results['f1'] /= len(fixed_entity_types)
 
     logger.info(f"\n-----\nICL Entity GPT:\n{mean_results}\n------")
 
