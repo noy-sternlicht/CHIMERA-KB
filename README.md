@@ -101,6 +101,51 @@ chmod +x scripts/analyse_kb.sh
 unzip data/recombination_prediction_data.zip -d data/
 
 ```
+Run the following script to reproduce ranking results:
+
+```bash
+#!/bin/bash -x
+activate() {
+  . $PWD/myenv/bin/activate
+}
+
+set_env_vars() {
+  PYTHONPATH=$PWD/src
+  export PYTHONPATH
+
+  HF_DATASETS_CACHE=$PWD/.datasets_cache
+  export HF_DATASETS_CACHE
+
+  HF_HOME=$PWD/.hf_home
+  export HF_HOME
+}
+
+activate
+set_env_vars
+
+module load cuda
+module load nvidia
+
+python3 src/experiments/recombination_prediction/finetune_sent_transformer_biencoder.py \
+  --train_path "data/recombination_prediction_data/train.csv" \
+  --test_path "data/recombination_prediction_data/test.csv" \
+  --valid_path "data/recombination_prediction_data/valid.csv" \
+  --entities_path " data/CHIMERA/entities_text.csv" \
+  --output_path "sentence_transformers_link_prediction_res" \
+  --nr_negatives 30 \
+  --all_edges_path "data/recombination_prediction_data/all.csv" \
+  --test_candidates_path "data/recombination_prediction_data/entities_after_cutoff.txt" \
+  --valid_candidates_path "data/recombination_prediction_data/entities_before_cutoff.txt" \
+  --model_name "BAAI/bge-large-en-v1.5" \ # Either "BAAI/bge-large-en-v1.5", "intfloat/e5-large-v2" or "sentence-transformers/all-mpnet-base-v2"
+  --num_train_epochs 3 \
+  --batch_size 64 \
+  --learning_rate 2e-5 \
+  --warmup_ratio 0.1 \
+  --encode_batch_size 1024 \
+  --weights_precision 32 \
+  --checkpoint '' \  # path to a checkpoint to load, remove if training from scratch
+  --zero_shot          # remove if training from scratch
+```
 
 ## Citation
 If you use this code or data in your research, please cite our paper:
