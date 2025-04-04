@@ -283,18 +283,18 @@ def main(eval_path: str, base_model_path: str, trained_model_path: str):
     class_results = {"precision": class_results['avg']['precision'], "recall": class_results['avg']['recall'],
                      "f1": class_results['avg']['f1']}
 
-    # entity_results = compute_entity_agreement(pred_entities, gold_entities, texts,
-    #                                           ['comb-element', 'inspiration-src', 'inspiration-target'],
-    #                                           logger)
-    #
-    # entity_results = {"precision": entity_results['avg']['precision'], "recall": entity_results['avg']['recall'],
-    #                   "f1": entity_results['avg']['f1']}
+    entity_results = compute_entity_agreement(pred_entities, gold_entities, texts,
+                                              ['comb-element', 'inspiration-src', 'inspiration-target'],
+                                              logger)
 
-    # total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
-    #                  'classification': class_results}
-    #
-    total_results = {'relation_extraction': rel_results,
+    entity_results = {"precision": entity_results['avg']['precision'], "recall": entity_results['avg']['recall'],
+                      "f1": entity_results['avg']['f1']}
+
+    total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
                      'classification': class_results}
+
+    # total_results = {'relation_extraction': rel_results,
+    #                  'classification': class_results}
 
     logger.info(f"\n-----\nMistral E2E: {json.dumps(total_results, indent=4)}\n-----")
 
