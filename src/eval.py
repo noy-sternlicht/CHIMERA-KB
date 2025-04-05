@@ -49,7 +49,6 @@ OPEN_AI_CLIENT = OpenAI(api_key=OPEN_AI_KEY)
 def prompt_span_comparison_model(span1: str, span2: str, text: str, span_type: str, client="gpt") -> str:
     prompt = SPAN_COMPARISON_PROMPT.format(TEXT=text, SPAN1=span1, SPAN2=span2, ENTITY_TYPE=span_type)
 
-    start_time = time.time()
     completion = OPEN_AI_CLIENT.chat.completions.create(
         model="gpt-4o-mini",
         max_tokens=400,
@@ -63,7 +62,6 @@ def prompt_span_comparison_model(span1: str, span2: str, text: str, span_type: s
     )
 
     response = completion.choices[0].message.content
-    print(f"Time taken: {time.time() - start_time}")
 
     res_start = response.find("<answer>") + len("<answer>")
     res_end = response.find("</answer>")

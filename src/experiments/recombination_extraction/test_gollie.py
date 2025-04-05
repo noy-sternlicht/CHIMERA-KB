@@ -90,7 +90,12 @@ def main():
     total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
                      'classification': class_results}
 
-    logger.info(f"\n-----\nGoLLIE Results: {json.dumps(total_results, indent=4)}\n-----")
+    table_string = '\n-----\nGoLLIE E2E:\nRes-type\t&\tP\t&\tR\t&\tF1 \\\\ \n'
+    for res_type, res in total_results.items():
+        table_string += f"{res_type[:8]}\t&\t{res['precision']:.3f}\t&\t{res['recall']:.3f}\t&\t{res['f1']:.3f} \\\\ \n"
+
+    table_string += '\n-----\n'
+    logger.info(table_string)
 
 
 

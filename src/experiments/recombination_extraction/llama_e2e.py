@@ -437,8 +437,12 @@ def main():
     total_results = {'relation_extraction': rel_results, 'entity_extraction': entity_results,
                      'classification': class_results}
 
+    table_string = '\n-----\nLlama E2E:\nRes-type\t&\tP\t&\tR\t&\tF1 \\\\ \n'
+    for res_type, res in total_results.items():
+        table_string += f"{res_type[:8]}\t&\t{res['precision']:.3f}\t&\t{res['recall']:.3f}\t&\t{res['f1']:.3f} \\\\ \n"
 
-    logger.info(f"\n-----\nLlama E2E: {json.dumps(total_results, indent=4)}\n-----")
+    table_string += '\n-----\n'
+    logger.info(table_string)
 
 
 if __name__ == '__main__':
