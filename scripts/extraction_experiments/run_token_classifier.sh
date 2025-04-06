@@ -32,3 +32,4 @@ python3 src/experiments/recombination_extraction/general_token_classifier.py \
 --output_dir token_classifier_out \
 --data_dir 'data/recombination_extraction_data' \
 --model_name 'allenai/scibert_scivocab_uncased' \
+--checkpoint 'models/extraction_models/checkpoints/token_classifier'

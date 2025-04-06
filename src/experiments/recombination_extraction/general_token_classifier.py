@@ -329,7 +329,7 @@ class TokenClassifier:
 
         return metrics
 
-    def eval_model_from_checkpoint(self, model_checkpoint: str, eval_splits: List[str]) -> Dict[str, Dict]:
+    def eval_model_from_checkpoint(self, model_checkpoint: str) -> Dict[str, Dict]:
         assert os.path.exists(model_checkpoint), f"File {model_checkpoint} does not exist"
 
         def init_model():
@@ -339,7 +339,7 @@ class TokenClassifier:
 
         trainer = self.init_trainer(self.tokenized_datasets['train'], init_model, inference_mode=True)
 
-        return self.eval_model(trainer, eval_splits)
+        return self.eval_model(trainer, ['test'])
 
 
 def init_token_classifier(model_name: str, data_splits: Dict[str, pd.DataFrame]) -> TokenClassifier:
@@ -400,13 +400,6 @@ def map_word_tokens_indices_to_char_indices(text: str) -> Dict[int, Dict]:
     return word_tokens_info
 
 
-def run_finetune_pipeline(data_splits: Dict[str, pd.DataFrame]):
-    model_name = args.model_name
-    data_splits = {'train': data_splits['train'], 'test': data_splits['eval']}
-    token_classifier = init_token_classifier(model_name, data_splits)
-    token_classifier.finetune_model()
-
-
 def main():
     data_dir = args.data_dir
     data_splits = {'train': None, 'eval': None}
@@ -415,9 +408,15 @@ def main():
         split_data = pd.read_csv(split_path, dtype={'paper_id': str})
         data_splits[split_name] = split_data
 
-    data_splits['eval'] = data_splits['eval'].head(5)
+    model_name = args.model_name
+    data_splits = {'train': data_splits['train'], 'test': data_splits['eval']}
+    token_classifier = init_token_classifier(model_name, data_splits)
 
-    run_finetune_pipeline(data_splits)
+    if not args.checkpoint:
+        checkpoint_path, _ = token_classifier.finetune_model()
+        logger.info(f"Saved checkpoint to: {checkpoint_path}")
+    else:
+        token_classifier.eval_model_from_checkpoint(args.checkpoint)
 
 
 if __name__ == '__main__':
@@ -426,6 +425,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str)
     parser.add_argument('--model_name', type=str)
     parser.add_argument('--hf_token', type=str, default='huggingface_api_key')
+    parser.add_argument('--checkpoint', type=str)
     args = parser.parse_args()
 
     logger = setup_default_logger(args.output_dir)
