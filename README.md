@@ -56,9 +56,7 @@ git clone https://github.com/hitz-zentroa/GoLLIE.git
 git clone https://github.com/sunnweiwei/RankGPT.git
 
 # Install dependencies
-pip install --upgrade pip setuptools wheel
-pip install torch==2.5.1
-pip install --no-cache-dir -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Setting up the OpenAI API
