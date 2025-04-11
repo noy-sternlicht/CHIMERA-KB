@@ -87,7 +87,7 @@ This part describe how to reproduce the results presented in our paper.
       from [Huggingface](https://huggingface.co/noystl/mistral-base-model/tree/main) or
       [mistral-finetune](https://github.com/mistralai/mistral-finetune/tree/main?tab=readme-ov-file) and keep it
       in under `mistral_base_model` in the project root directory.
-    * Download the relevant LoRA checkpoints from Huggingface, and keep it in the project directory.
+    * Download the relevant LoRA checkpoints from Huggingface.
         * [mistral-e2e](https://huggingface.co/noystl/mistral-e2e)
         * [mistral-abstract-classifier](https://huggingface.co/noystl/mistral_abstract_classifier)
         * [mistral-abstract-classifier-cot](https://huggingface.co/noystl/mistral-abstract-cot-classifier)
@@ -100,7 +100,7 @@ This part describe how to reproduce the results presented in our paper.
     * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/scibert_token_classifier).
     * Adjust the `checkpoint` path in `scripts/extraction_experiments/run_token_classifier.sh` and run the script.
 6. We use [PURE](https://github.com/princeton-nlp/PURE) to train and run inference in a separate environment, as it
-   requires python 3.7 and isn't compatible with the rest of the code. 
+   requires python 3.7 and isn't compatible with the rest of the code.
 
 ### Knowledge base analysis
 
@@ -116,61 +116,57 @@ chmod +x scripts/analyse_kb.sh
 
 ### Prediction experiments
 
-**TODO**: add an unzip models step
+1. Unzip the data: `unzip data/recombination_prediction_data.zip -d data/`
+2. All trained models checkpoints are available
+   on [Huggingface](https://huggingface.co/collections/noystl/chimera-prediction-models-67f8fa1ccf2cf48e8fb1d077).
+   Download them in case you want to reproduce results for fine-tuned models.
+3. Run `scripts/prediction_experiments/run_ranker.sh` to reproduce ranking results. Change the arguments as follows to
+   reproduce different settings (models, zero-shot, etc.):
+   ```bash
+   python3 src/experiments/recombination_prediction/finetune_sent_transformer_biencoder.py \
+     --train_path "data/recombination_prediction_data/train.csv" \
+     --test_path "data/recombination_prediction_data/test.csv" \
+     --valid_path "data/recombination_prediction_data/valid.csv" \
+     --entities_path "data/CHIMERA/entities_text.csv" \
+     --output_path "sentence_transformers_link_prediction_res" \
+     --nr_negatives 30 \
+     --all_edges_path "data/recombination_prediction_data/all.csv" \
+     --test_candidates_path "data/recombination_prediction_data/entities_after_cutoff.txt" \
+     --valid_candidates_path "data/recombination_prediction_data/entities_before_cutoff.txt" \
+     --model_name "sentence-transformers/all-mpnet-base-v2" \ # Either "BAAI/bge-large-en-v1.5", "intfloat/e5-large-v2" or "sentence-transformers/all-mpnet-base-v2"
+     --num_train_epochs 3 \
+     --batch_size 64 \
+     --learning_rate 2e-5 \
+     --warmup_ratio 0.1 \
+     --encode_batch_size 1024 \
+     --weights_precision 32 \
+     --checkpoint ''\  # path to a checkpoint to load, remove if training from scratch 
+     --zero_shot       # loads the provided checkpoint or base model and runs evaluation.
+   ```
 
-```bash
-# Unzip the data
-unzip data/recombination_prediction_data.zip -d data/
+4. To run the reranker, you should first get the results path from the ranker log. The relevant line should look like
+   this:
 
-```
+   ```
+   Wrote results to sentence_transformers_link_prediction_res/<model>_zero_shot_<date>/results.json
+   ```
 
-Run `scripts/prediction_experiments/run_ranker.sh` to reproduce ranking results.
-Change the arguments as follows to reproduce different settings (models, zero-shot, etc.):
+5. Now, run `scripts/prediction_experiments/run_reranker.sh` to reproduce reranking results. Make sure to change
+   the `biencoder_results` argument to the path you got from the ranker log.
 
-```bash
-python3 src/experiments/recombination_prediction/finetune_sent_transformer_biencoder.py \
-  --train_path "data/recombination_prediction_data/train.csv" \
-  --test_path "data/recombination_prediction_data/test.csv" \
-  --valid_path "data/recombination_prediction_data/valid.csv" \
-  --entities_path "data/CHIMERA/entities_text.csv" \
-  --output_path "sentence_transformers_link_prediction_res" \
-  --nr_negatives 30 \
-  --all_edges_path "data/recombination_prediction_data/all.csv" \
-  --test_candidates_path "data/recombination_prediction_data/entities_after_cutoff.txt" \
-  --valid_candidates_path "data/recombination_prediction_data/entities_before_cutoff.txt" \
-  --model_name "BAAI/bge-large-en-v1.5" \ # Either "BAAI/bge-large-en-v1.5", "intfloat/e5-large-v2" or "sentence-transformers/all-mpnet-base-v2"
-  --num_train_epochs 3 \
-  --batch_size 64 \
-  --learning_rate 2e-5 \
-  --warmup_ratio 0.1 \
-  --encode_batch_size 1024 \
-  --weights_precision 32 \
-  --checkpoint 'models/pred_models/bge-large-en' \  # path to a checkpoint to load, remove if training from scratch 
-  --zero_shot                                       # loads the provided checkpoint or base model and runs evaluation.
-```
+   ```bash
+   python3 src/experiments/recombination_prediction/reranker.py \
+     --biencoder_results "" \
+     --output_dir "reranker_out" \
+     --openai_engine "gpt-4o" \
+     --rank_gpt_window_size 10 \
+     --rank_gpt_step_size 5 \
+     --top_k 20 \
+     --perform_checkpoint_at 500
+   ```
 
-To run the reranker, you should first get the results path from the ranker log. The relevant line should look like this:
-
-```
-Wrote results to sentence_transformers_link_prediction_res/bge-large-en-v1.5_zero_shot_2025-04-11_12-02-54/results.json
-```
-
-Now, run `scripts/prediction_experiments/run_reranker.sh` to reproduce reranking results. Make sure to change
-the `biencoder_results` argument to the path you got from the ranker log.
-
-```bash
-python3 src/experiments/recombination_prediction/reranker.py \
-  --biencoder_results "" \
-  --output_dir "reranker_out" \
-  --openai_engine "gpt-4o" \
-  --rank_gpt_window_size 10 \
-  --rank_gpt_step_size 5 \
-  --top_k 20 \
-  --perform_checkpoint_at 500
-```
-
-Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might vary slightly in
-case you skip this step.
+   Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might vary slightly in
+   case you skip this step.
 
 #### User study
 
