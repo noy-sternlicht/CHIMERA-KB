@@ -86,7 +86,7 @@ def main():
     logger.info(f'Loaded {len(ranker_results)} ranker results from {args.biencoder_results}')
 
     metrics = {}
-    filter_types = ['combination', 'inspiration', 'cross-domain', 'challenging', 'easy', 'all']
+    filter_types = ['combination', 'inspiration', 'cross-domain', 'all']
     metric_types = ['mr', 'mrr', 'hits@1', 'hits@3', 'hits@5', 'hits@10', 'hits@50', 'hits@100', 'median_gold_rank']
     for ftype in filter_types:
         for metric in metric_types:
@@ -195,11 +195,6 @@ def main():
         update_metrics(metrics, gold_rank, 'all')
         if row['is_cross_domain']:
             update_metrics(metrics, gold_rank, 'cross-domain')
-        if row['is_strict_leakage']:
-            update_metrics(metrics, gold_rank, 'easy')
-        else:
-            update_metrics(metrics, gold_rank, 'challenging')
-
         if row['relation'] == 'combination':
             update_metrics(metrics, gold_rank, 'combination')
         if row['relation'] == 'inspiration':
@@ -264,10 +259,7 @@ if __name__ == '__main__':
     now = datetime.now()
     timestamp = now.strftime("%Y-%m-%d_%H-%M-%S")
     model_name = ''
-    if args.use_ranker1:
-        model_name += args.ranker1_model.split('/')[-1]
-    if args.use_rank_gpt:
-        model_name += args.openai_engine
+    model_name += args.openai_engine
 
     args.output_dir = os.path.join(output_dir, f'{model_name}_{timestamp}')
 

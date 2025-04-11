@@ -18,8 +18,8 @@ activate
 set_env_vars
 
 
-python3 src/link_prediction/reranker.py \
-  --biencoder_results "" \
+python3 src/experiments/recombination_prediction/reranker.py \
+  --biencoder_results "sentence_transformers_link_prediction_res/bge-large-en-v1.5_zero_shot_2025-04-11_12-02-54/results.json" \
   --output_dir "reranker_out" \
   --openai_engine "gpt-4o" \
   --rank_gpt_window_size 10 \

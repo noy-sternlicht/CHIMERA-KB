@@ -367,6 +367,7 @@ class RankingEvaluator(SentenceEvaluator):
         results_path = os.path.join(self.output_path, 'results.json')
         results_df = pd.DataFrame(ranker_results)
         results_df.to_json(results_path, orient='records', lines=True)
+        self.logger.info(f'Wrote results to {results_path}')
 
         return metrics
 
