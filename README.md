@@ -80,7 +80,7 @@ root directory of the project and paste the key there. The code will automatical
 
 ## Reproducing Results
 
-This part describe how to reproduce the results presented in our the paper.
+This part describe how to reproduce the results presented in our paper.
 
 ### Recombination extraction
 
@@ -169,7 +169,7 @@ python3 src/experiments/recombination_prediction/reranker.py \
   --perform_checkpoint_at 500
 ```
 
-Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might very slightly in
+Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might vary slightly in
 case you skip this step.
 
 ## Citation
