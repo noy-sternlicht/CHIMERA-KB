@@ -30,10 +30,10 @@ set_env_vars
 module load cuda
 module load nvidia
 
-#python3 src/experiments/recombination_extraction/run_gollie.py \
-#  --output_dir gollie_out \
-#  --eval_path data/recombination_extraction_data/eval.csv \
-#  --model_name HiTZ/GoLLIE-13B
+python3 src/experiments/recombination_extraction/run_gollie.py \
+  --output_dir gollie_out \
+  --eval_path data/recombination_extraction_data/eval.csv \
+  --model_name HiTZ/GoLLIE-13B
 
 reset_pythonenv
 
