@@ -23,6 +23,7 @@ are welcome to use CHIMERA to study recombination in science, develop new algori
 Make sure to cite our paper as described [here](#Citation).
 
 ### Data
+
 The `data/` contains three zip files with the following contents:
 
 ```aiignore
@@ -32,6 +33,7 @@ The `data/` contains three zip files with the following contents:
 ```
 
 ## Getting Started
+
 ### Prerequisites
 
 * Python 3.11.2 or higher
@@ -77,23 +79,28 @@ This part describe how to reproduce the results presented in our paper.
 
 ### Recombination extraction
 
-```bash
-# Unzip the data
-unzip data/recombination_extraction_data.zip -d data/
-
-# Unzip checkpoints
-unzip models/extraction_models.zip -d models/
-
-# Now, run the relevant script from scripts/extraction_experiments. For example:
-chmod +x ./scripts/extraction_experiments/run_gpt_icl_extraction.sh
-./scripts/extraction_experiments/run_gpt_icl_extraction.sh
-```
-
-##### PURE Extraction
-
-We use [PURE](https://github.com/princeton-nlp/PURE) as one of our extractive baselines. However, the model repository
-isn't compatible with python versions > 3.7.
-**TODO**
+1. Unzip the data: `unzip data/recombination_extraction_data.zip -d data/`
+2. Reproduce zero-shot baselines (GPT-4o, GoLLIE) results:
+    * Run the relevant script from `scripts/extraction_experiments/`.
+3. Reproduce Mistral-based baselines results:
+    * Download the base model weights for Mistral 7B Instruct v3
+      from [Huggingface](https://huggingface.co/noystl/mistral-base-model/tree/main) or
+      [mistral-finetune](https://github.com/mistralai/mistral-finetune/tree/main?tab=readme-ov-file) and keep it
+      in under `mistral_base_model` in the project root directory.
+    * Download the relevant LoRA checkpoints from Huggingface, and keep it in the project directory.
+        * [mistral-e2e](https://huggingface.co/noystl/mistral-e2e)
+        * [mistral-abstract-classifier](https://huggingface.co/noystl/mistral_abstract_classifier)
+        * [mistral-abstract-classifier-cot](https://huggingface.co/noystl/mistral-abstract-cot-classifier)
+    * Run `scripts/extraction_experiments/run_mistral_baselines.sh`. Make sure to verify
+      that `tokenizer_path`, `lora_path` and `trained_model_path` match the locations of the LoRA checkpoints.
+4. Reproduce Llama results:
+    * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/llama-8b-e2e).
+    * Adjust the `checkpoint` parameter in `scripts/extraction_experiments/run_llama_e2e.sh` and run the script.
+5. Reproduce ScBERT-based token classifier results:
+    * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/scibert_token_classifier).
+    * Adjust the `checkpoint` path in `scripts/extraction_experiments/run_token_classifier.sh` and run the script.
+6. We use [PURE](https://github.com/princeton-nlp/PURE) to train and run inference in a separate environment, as it
+   requires python 3.7 and isn't compatible with the rest of the code. 
 
 ### Knowledge base analysis
 
