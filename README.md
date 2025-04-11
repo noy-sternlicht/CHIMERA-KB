@@ -122,8 +122,8 @@ python3 src/experiments/recombination_prediction/finetune_sent_transformer_bienc
   --warmup_ratio 0.1 \
   --encode_batch_size 1024 \
   --weights_precision 32 \
-  --checkpoint 'models/pred_models/bge-large-en' \  # path to a checkpoint to load, remove if training from scratch
-  --zero_shot                                       # remove if training from scratch
+  --checkpoint 'models/pred_models/bge-large-en' \  # path to a checkpoint to load, remove if training from scratch 
+  --zero_shot                                       # loads the provided checkpoint or base model and runs evaluation.
 ```
 **TODO**: mention rankgpt prompt changes
 ## Citation

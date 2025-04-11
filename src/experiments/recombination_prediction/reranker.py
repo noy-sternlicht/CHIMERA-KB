@@ -3,7 +3,6 @@ import ast
 from datetime import datetime
 
 from util import setup_default_logger
-from vllm import LLM, SamplingParams
 import json
 import os
 import statistics
