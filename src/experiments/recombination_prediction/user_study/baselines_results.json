@@ -1,0 +1,9 @@
+{
+  "baselines": {
+    "mpnet_zero": "sentence_transformers_link_prediction_res/all-mpnet-base-v2_zero_shot_2025-03-06_09-53-14/results.json",
+    "ours": "reranker_out_13_03/gpt-4o_2025-03-14_12-00-29/reranked_results.json",
+    "random": "random_baseline/random_baseline_results.json",
+    "gpt-4o": "llm_baseline_out/llm_baseline_results.json",
+    "sciIE": "sciie_baseline_out/llm_baseline_results.json"
+  }
+}

@@ -172,7 +172,18 @@ python3 src/experiments/recombination_prediction/reranker.py \
 Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might vary slightly in
 case you skip this step.
 
+#### User study
+
+1. Use `scripts/user_study_data_prep/run_user_study_baselines.sh` to rerun all user study
+   baselines (except ours, see running instructions [here](#prediction-experiments)).
+2. Fill in the baselines results paths in `src/experiments/recombination_prediction/user_study/baselines_results.json`
+3. Run `scripts/user_study_data_prep/prep_user_study_data.sh` to prepare the user study data.
+
+We performed the study using a streamlit-built platform. The code for batching the data and assigning it to users, the
+annotation platform, and responses analysis is available [here](https://github.com/noy-sternlicht/myProject/tree/main).
+
 ## Citation
+
 If you use this code or data in your research, please cite our paper:
 
 ```bibtex
