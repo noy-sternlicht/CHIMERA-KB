@@ -92,7 +92,7 @@ This part describe how to reproduce the results presented in our paper.
         * [mistral-abstract-classifier](https://huggingface.co/noystl/mistral_abstract_classifier)
         * [mistral-abstract-classifier-cot](https://huggingface.co/noystl/mistral-abstract-cot-classifier)
     * Run `scripts/extraction_experiments/run_mistral_baselines.sh`. Make sure to verify
-      that `tokenizer_path`, `lora_path` and `trained_model_path` match the locations of the LoRA checkpoints.
+      that `tokenizer_path`, `lora_path` and `trained_model_path` match the location of the LoRA checkpoints.
 4. Reproduce Llama results:
     * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/llama-8b-e2e).
     * Adjust the `checkpoint` parameter in `scripts/extraction_experiments/run_llama_e2e.sh` and run the script.
