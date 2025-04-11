@@ -23,20 +23,15 @@ are welcome to use CHIMERA to study recombination in science, develop new algori
 Make sure to cite our paper as described [here](#Citation).
 
 ### Data
-
-**TODO**: update
 The `data/` contains three zip files with the following contents:
 
 ```aiignore
 ├── CHIMERA.zip                             # The CHIMERA knowledge base
-├── recombination_extraction_data.zip       # train, test sets for recombination extraction
+├── recombination_extraction_data.zip       # train, test sets for recombination extraction + preprocessed versions for mistral-finetune
 ├── recombination_prediction_data.zip       # train, dev, test sets for recombination prediction       
 ```
 
 ## Getting Started
-
-**TODO**: Add prerequisites, run pip freeze when I'm done with the repo and add a requirement file here
-
 ### Prerequisites
 
 * Python 3.11.2 or higher
