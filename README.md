@@ -11,9 +11,9 @@
 
 CHIMERA is knowledge base of over 28K _real_ scientific recombination examples.
 Recombination is the process of creating original ideas by integrating elements of existing mechanisms and concepts. For
-example, taking inspiration from nature to design new technologies. We build CHIMERA by automatically extracting
-examples of "recombination in action" from the scientific literature:
+example, taking inspiration from nature to design new technologies. 
 
+We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature:
 ![Demo](example.gif)
 
 You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
