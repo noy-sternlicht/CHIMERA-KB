@@ -81,7 +81,8 @@ chmod +x ./scripts/extraction_experiments/run_gpt_icl_extraction.sh
 ./scripts/extraction_experiments/run_gpt_icl_extraction.sh
 ```
 ##### PURE Extraction
-We use [PURE](https://github.com/princeton-nlp/PURE) as one of our extractive baselines. Reproducing its results requires a few more steps, since the repository code isn't compatible with python>3.7 
+We use [PURE](https://github.com/princeton-nlp/PURE) as one of our extractive baselines. However, the model repository isn't compatible with python versions > 3.7.
+**TODO**
 
 ### Knowledge base analysis
 Run the following to generate the tables and csv files used to create the analysis figures in the paper.
