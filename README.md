@@ -6,16 +6,17 @@
 </p>
 
 ---
+
 ## The CHIMERA knowledge base
+
 CHIMERA is knowledge base of over 28K _real_ scientific recombination examples.
 Recombination is the process of creating original ideas by integrating elements of existing mechanisms and concepts. For
-example, taking inspiration from nature to design new technologies:
-
+example, taking inspiration from nature to design new technologies. We build CHIMERA by automatically extracting
+examples of "recombination in action" from the scientific literature:
 
 ![Demo](example.gif)
 
-We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature. You
-are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
+You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
 Make sure to cite our paper as described [here](#Citation).
 
 ## Getting Started
@@ -38,31 +39,35 @@ pip install -r requirements.txt
 ```
 
 ### Setting up the OpenAI API
+
 Our recombination prediction model requires an OpenAI API key. You can set it up by following the
 instructions [here](https://beta.openai.com/docs/developer-quickstart/).
 After you have the API key, create a simple text file `openai_api_key` in the root directory of the project and paste
 the key there. The code will automatically read the key from this file.
 
-
 ## Recombination extraction
+
 TODO
 
 ## Recombination prediction
+
 TODO
 
 ## Reproducing paper results
+
 This part describe how to reproduce the results presented in our paper.
 
 ### Setup
+
 1. Clone external dependencies:
    ```bash
    git clone https://github.com/mistralai/mistral-finetune.git
    git clone https://github.com/hitz-zentroa/GoLLIE.git
    ```
-2. Some experiments require an HuggingFace API key. Set it up by creating a file `huggingface_api_key` and put it there. The code will automatically read the key from this file.
+2. Some experiments require an HuggingFace API key. Set it up by creating a file `huggingface_api_key` and put it there.
+   The code will automatically read the key from this file.
 3. In addition, make sure you have set up the OpenAI API key as described [here](#setting-up-the-openai-api
-).
-
+   ).
 
 ### Recombination extraction
 
