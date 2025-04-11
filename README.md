@@ -101,36 +101,15 @@ chmod +x scripts/analyse_kb.sh
 unzip data/recombination_prediction_data.zip -d data/
 
 ```
-Run the following script to reproduce ranking results:
+Run `scripts/prediction_experiments/run_ranker.sh` to reproduce ranking results.
+Change the arguments as follows to reproduce different settings (models, zero-shot, etc.):
 
 ```bash
-#!/bin/bash -x
-activate() {
-  . $PWD/myenv/bin/activate
-}
-
-set_env_vars() {
-  PYTHONPATH=$PWD/src
-  export PYTHONPATH
-
-  HF_DATASETS_CACHE=$PWD/.datasets_cache
-  export HF_DATASETS_CACHE
-
-  HF_HOME=$PWD/.hf_home
-  export HF_HOME
-}
-
-activate
-set_env_vars
-
-module load cuda
-module load nvidia
-
 python3 src/experiments/recombination_prediction/finetune_sent_transformer_biencoder.py \
   --train_path "data/recombination_prediction_data/train.csv" \
   --test_path "data/recombination_prediction_data/test.csv" \
   --valid_path "data/recombination_prediction_data/valid.csv" \
-  --entities_path " data/CHIMERA/entities_text.csv" \
+  --entities_path "data/CHIMERA/entities_text.csv" \
   --output_path "sentence_transformers_link_prediction_res" \
   --nr_negatives 30 \
   --all_edges_path "data/recombination_prediction_data/all.csv" \
@@ -143,8 +122,8 @@ python3 src/experiments/recombination_prediction/finetune_sent_transformer_bienc
   --warmup_ratio 0.1 \
   --encode_batch_size 1024 \
   --weights_precision 32 \
-  --checkpoint '' \  # path to a checkpoint to load, remove if training from scratch
-  --zero_shot          # remove if training from scratch
+  --checkpoint 'models/pred_models/bge-large-en' \  # path to a checkpoint to load, remove if training from scratch
+  --zero_shot                                       # remove if training from scratch
 ```
 **TODO**: mention rankgpt prompt changes
 ## Citation
@@ -164,9 +143,7 @@ If you use this code or data in your research, please cite our paper:
 ```
 
 ## Authors
-
-- **First Last** - [GitHub Profile](https://github.com/username)
-- **Another Coauthor** - [GitHub Profile](https://github.com/coauthor)
+Noy Sternlicht, Tom Hope
 
 ## License
 

@@ -5,3 +5,4 @@ data/recombination_extraction_data
 models/extraction_models
 huggingface_api_key
 data/CHIMERA
+data/recombination_prediction_data

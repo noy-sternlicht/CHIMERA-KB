@@ -114,26 +114,6 @@ def domain_comparison(row):
     return source_part != target_part
 
 
-def strict_leak_detection(context, anchor, answer):
-    punctuation = string.punctuation
-    input_words = word_tokenize_text(context + anchor)
-    input_words_lower = [w.lower() for w in input_words if w.isalpha() and len(w) > 2]
-    input_words_lower = set(input_words_lower)
-    input_words_lower = input_words_lower.difference(stopwords.words('english'))
-    input_words_lower = input_words_lower.difference(set(punctuation))
-
-    answer_words = word_tokenize_text(answer)
-    answer_words_lower = [w.lower() for w in answer_words if w.isalpha() and len(w) > 2]
-    answer_words_lower = set(answer_words_lower)
-    answer_words_lower = answer_words_lower.difference(stopwords.words('english'))
-    answer_words_lower = answer_words_lower.difference(set(punctuation))
-
-    if len(input_words_lower.intersection(answer_words_lower)) > 0:
-        return True
-    else:
-        return False
-
-
 def build_eval_dataset(eval_path: str, model_name: str):
     eval_data = read_edges(eval_path)
 
@@ -161,7 +141,6 @@ def build_eval_dataset(eval_path: str, model_name: str):
                 'answer': answer_text,
                 'relation': row['relation'],
                 'is_cross_domain': domain_comparison(row),
-                'is_strict_leakage': not strict_leak_detection(row['context'], anchor_text, answer_text),
                 'answer_id': answer_id,
                 'anchor_id_column': 'source_id' if mode == 'tail' else 'target_id',
                 'answer_id_column': 'target_id' if mode == 'tail' else 'source_id',
@@ -236,7 +215,6 @@ def get_eval_samples(all_edges_path, candidate_path, eval_data, entity_id_to_tex
             'positive_id': example['answer_id'],
             'relation': example['relation'],
             'is_cross_domain': example['is_cross_domain'],
-            'is_strict_leakage': example['is_strict_leakage'],
             'candidates_text': candidates_text,
             'candidates': candidates,
             'positive_index': candidates.index(example['answer_id']),
@@ -298,7 +276,7 @@ class RankingEvaluator(SentenceEvaluator):
             entity_id_to_encoded = {e: entities_encoded[i,] for i, e in enumerate(sorted_ids)}
 
         metrics = {}
-        filter_types = ['combination', 'inspiration', 'cross-domain', 'strict', 'all']
+        filter_types = ['combination', 'inspiration', 'cross-domain', 'all']
         metric_types = ['mr', 'mrr', 'hits@1', 'hits@3', 'hits@5', 'hits@10', 'hits@50', 'hits@100', 'median_gold_rank']
         for ftype in filter_types:
             for metric in metric_types:
@@ -343,7 +321,6 @@ class RankingEvaluator(SentenceEvaluator):
                 'positive': sample['positive'],
                 'positive_id': sample['positive_id'],
                 'is_cross_domain': sample['is_cross_domain'],
-                'is_strict_leakage': sample['is_strict_leakage'],
                 'candidates': [sample['candidates'][idx] for idx in ranked_candidates_indices],
                 'candidates_text': [sample['candidates_text'][idx] for idx in ranked_candidates_indices],
                 'positive_index': rank})
@@ -351,8 +328,6 @@ class RankingEvaluator(SentenceEvaluator):
             update_metrics(metrics, rank, 'all')
             if sample['is_cross_domain']:
                 update_metrics(metrics, rank, 'cross-domain')
-            if sample['is_strict_leakage']:
-                update_metrics(metrics, rank, 'strict')
             if sample['relation'] == 'combination':
                 update_metrics(metrics, rank, 'combination')
             if sample['relation'] == 'inspiration':

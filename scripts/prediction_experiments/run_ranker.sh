@@ -25,16 +25,16 @@ set_env_vars
 module load cuda
 module load nvidia
 
-python3 src/link_prediction/finetune_sent_transformer_biencoder.py \
-  --train_path "cross_domain_link_prediction_06_03_all_with_other/train.csv" \
-  --test_path "cross_domain_link_prediction_06_03_all_with_other/test.csv" \
-  --valid_path "cross_domain_link_prediction_06_03_all_with_other/valid.csv" \
-  --entities_path "kb_output_31_01_with_other_nodes/entities_text.csv" \
+python3 src/experiments/recombination_prediction/finetune_sent_transformer_biencoder.py \
+  --train_path "data/recombination_prediction_data/train.csv" \
+  --test_path "data/recombination_prediction_data/test.csv" \
+  --valid_path "data/recombination_prediction_data/valid.csv" \
+  --entities_path "data/CHIMERA/entities_text.csv" \
   --output_path "sentence_transformers_link_prediction_res" \
   --nr_negatives 30 \
-  --all_edges_path "cross_domain_link_prediction_06_03_all_with_other/all.csv" \
-  --test_candidates_path "cross_domain_link_prediction_06_03_all_with_other/entities_after_cutoff.txt" \
-  --valid_candidates_path "cross_domain_link_prediction_06_03_all_with_other/entities_before_cutoff.txt" \
+  --all_edges_path "data/recombination_prediction_data/all.csv" \
+  --test_candidates_path "data/recombination_prediction_data/entities_after_cutoff.txt" \
+  --valid_candidates_path "data/recombination_prediction_data/entities_before_cutoff.txt" \
   --model_name "BAAI/bge-large-en-v1.5" \
   --num_train_epochs 3 \
   --batch_size 64 \
@@ -43,5 +43,5 @@ python3 src/link_prediction/finetune_sent_transformer_biencoder.py \
   --encode_batch_size 1024 \
   --eval_candidates_cutoff_year 2024 \
   --weights_precision 32 \
-  --checkpoint '' \
-  --zero_shot \
+  --checkpoint 'models/pred_models/bge-large-en' \
+  --zero_shot
