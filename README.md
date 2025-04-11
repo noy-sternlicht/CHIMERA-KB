@@ -14,6 +14,7 @@ Recombination is the process of creating original ideas by integrating elements 
 example, taking inspiration from nature to design new technologies. 
 
 We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature:
+
 ![Demo](example.gif)
 
 You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
