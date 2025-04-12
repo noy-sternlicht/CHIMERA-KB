@@ -77,7 +77,7 @@ This part describe how to reproduce the results presented in our paper.
     * Run the relevant script from `scripts/extraction_experiments/`.
 3. Reproduce Mistral-based baselines results:
     * Download the base model weights for Mistral 7B Instruct v3
-      from [Huggingface](https://huggingface.co/noystl/mistral-base-model/tree/main) or
+      from [huggingface](https://huggingface.co/noystl/mistral-base-model/tree/main) or
       [mistral-finetune](https://github.com/mistralai/mistral-finetune/tree/main?tab=readme-ov-file) and keep it
       in under `mistral_base_model` in the project root directory.
     * Download the relevant LoRA checkpoints from Huggingface.
@@ -87,10 +87,10 @@ This part describe how to reproduce the results presented in our paper.
     * Run `scripts/extraction_experiments/run_mistral_baselines.sh`. Make sure to verify
       that `tokenizer_path`, `lora_path` and `trained_model_path` match the location of the LoRA checkpoints.
 4. Reproduce Llama results:
-    * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/llama-8b-e2e).
+    * Download the model checkpoint from [huggingface](https://huggingface.co/noystl/llama-8b-e2e).
     * Adjust the `checkpoint` parameter in `scripts/extraction_experiments/run_llama_e2e.sh` and run the script.
 5. Reproduce ScBERT-based token classifier results:
-    * Download the model checkpoint from [Huggingface](https://huggingface.co/noystl/scibert_token_classifier).
+    * Download the model checkpoint from [huggingface](https://huggingface.co/noystl/scibert_token_classifier).
     * Adjust the `checkpoint` path in `scripts/extraction_experiments/run_token_classifier.sh` and run the script.
 6. We use [PURE](https://github.com/princeton-nlp/PURE) to train and run inference in a separate environment, as it
    requires python 3.7 and isn't compatible with the rest of the code.
@@ -111,7 +111,7 @@ chmod +x scripts/analyse_kb.sh
 
 1. Unzip the data: `unzip data/recombination_prediction_data.zip -d data/`
 2. All trained models checkpoints are available
-   on [Huggingface](https://huggingface.co/collections/noystl/chimera-prediction-models-67f8fa1ccf2cf48e8fb1d077).
+   on [huggingface](https://huggingface.co/collections/noystl/chimera-prediction-models-67f8fa1ccf2cf48e8fb1d077).
    Download them in case you want to reproduce results for fine-tuned models.
 3. Run `scripts/prediction_experiments/run_ranker.sh` to reproduce ranking results. Change the arguments as follows to
    reproduce different settings (models, zero-shot, etc.):
