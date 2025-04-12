@@ -15,7 +15,7 @@ example, taking inspiration from nature to design new technologies.
 
 We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature:
 
-![Demo](example.gif)
+![Demo](recombination_example.gif)
 
 You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
 Make sure to cite our paper as described [here](#Citation).
