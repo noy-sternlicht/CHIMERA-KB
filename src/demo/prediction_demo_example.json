@@ -1,0 +1,5 @@
+{
+  "context": "The need for improved factuality in scientific summarization is evident, as existing methods may not adequately address the accuracy of statements. This highlights a gap in the ability to effectively refine summaries through feedback mechanisms that incorporate both positive and negative information.",
+  "recombination_type": "inspiration",
+  "anchor": "A scientific summarization method"
+}

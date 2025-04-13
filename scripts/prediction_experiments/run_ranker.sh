@@ -35,7 +35,7 @@ python3 src/experiments/recombination_prediction/finetune_sent_transformer_bienc
   --all_edges_path "data/recombination_prediction_data/all.csv" \
   --test_candidates_path "data/recombination_prediction_data/entities_after_cutoff.txt" \
   --valid_candidates_path "data/recombination_prediction_data/entities_before_cutoff.txt" \
-  --model_name "BAAI/bge-large-en-v1.5" \
+  --model_name "sentence-transformers/all-mpnet-base-v2" \
   --num_train_epochs 3 \
   --batch_size 64 \
   --learning_rate 2e-5 \
@@ -43,5 +43,5 @@ python3 src/experiments/recombination_prediction/finetune_sent_transformer_bienc
   --encode_batch_size 1024 \
   --eval_candidates_cutoff_year 2024 \
   --weights_precision 32 \
-  --checkpoint 'models/pred_models/bge-large-en' \
+  --checkpoint 'models/pred_models/all-mpnet-base' \
   --zero_shot

@@ -7,10 +7,7 @@ from sentence_transformers.evaluation import SentenceEvaluator
 from tqdm import tqdm
 import statistics
 import json
-import string
 import os
-from util import word_tokenize_text
-from nltk.corpus import stopwords
 
 
 def build_query(context, anchor_text, relation):
