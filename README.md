@@ -11,7 +11,7 @@
 
 CHIMERA is knowledge base of over 28K _real_ scientific recombination examples.
 Recombination is the process of creating original ideas by integrating elements of existing mechanisms and concepts. For
-example, taking inspiration from nature to design new technologies. 
+example, taking inspiration from nature to design new technologies.
 
 We build CHIMERA by automatically extracting examples of "recombination in action" from the scientific literature:
 
@@ -22,29 +22,78 @@ Make sure to cite our paper as described [here](#Citation).
 
 ## Getting Started
 
+A quick start guide to get you up and running with the code.
+
 ### Installation
 
+1. Clone this repository:
+   ```bash
+   git clone https://github.cs.huji.ac.il/tomhope-lab/CHIMERA.git
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv myenv
+   source ./myenv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Setting up API keys
+
+Some of the code requires access to external APIs. You will need to set an OpenAI API key and a HuggingFace API key as
+follows:
+
+1. Get the keys (if you don't have them already):
+    * [OpenAI API key](https://platform.openai.com/docs/api-reference/authentication)
+    * [HuggingFace API key](https://huggingface.co/docs/hub/security-tokens)
+2. Set up the keys:
+   ```bash
+   echo "your-openai-api-key" > openai_api_key
+   echo "your-huggingface-api-key" > huggingface_api_key
+   ```
+   `openai_api_key` and `huggingface_api_key` are the default names of the files where the code will look for the keys.
+   Both should be located in the project root directory.
+
+### External dependencies
+
+Some code uses external dependencies that are not included in this repository. You will need to clone them separately.
+
+#### RankGPT
+
+We use [RankGPT](https://github.com/sunnweiwei/RankGPT) to improve our base recombination prediction model. Set it up by
+first cloning the directory:
+
 ```bash
-# Clone this repository
-git clone https://github.cs.huji.ac.il/tomhope-lab/CHIMERA.git
-
-# Create and activate a virtual environment
-python3 -m venv myenv
-source ./myenv/bin/activate
-
-# Clone external dependencies
 git clone https://github.com/sunnweiwei/RankGPT.git
+````
 
-# Install dependencies
-pip install -r requirements.txt
+We modify the default ranker prompt to better align with our task. You can do the same by changing the
+prompt [here](https://github.com/sunnweiwei/RankGPT/blob/0d62bc3855c7c118048a7c47c18e719b938e291a/rank_gpt.py#L143) as
+follows:
+
+```python
+def get_prefix_prompt(query, num):
+    return [
+        {'role': 'user',
+         'content': f"I have a scientific query describing settings and requesting a suggestion. I will provide you with {num} suggestions, each indicated by number identifier [].\nRank the suggestions based on their potential usefulness in addressing the query: {query}."},
+        {'role': 'assistant', 'content': 'Okay, please provide the passages.'}]
+
+
+def get_post_prompt(query, num):
+    return f"Scientific Query: {query}. \nRank the {num} suggestions above based on their potential usefulness in addressing the query. The suggestions should be listed in descending order using identifiers. The most relevant suggestions should be listed first. The output format should be [] > [], e.g., [1] > [2]."
 ```
 
-### Setting up the OpenAI API
+#### GoLLIE
 
-Our recombination prediction model requires an OpenAI API key. You can set it up by following the
-instructions [here](https://beta.openai.com/docs/developer-quickstart/).
-After you have the API key, create a simple text file `openai_api_key` in the root directory of the project and paste
-the key there. The code will automatically read the key from this file.
+[GoLLIE](https://github.com/hitz-zentroa/GoLLIE) is a zero-shot extraction model that we use as a baseline for our
+extraction task. You would only need to install
+it in case you want to reproduce our extraction experiment. In that case, simply clone the repository:
+
+```bash
+git clone https://github.com/hitz-zentroa/GoLLIE.git
+```
 
 ## Recombination extraction
 
@@ -52,23 +101,12 @@ TODO
 
 ## Recombination prediction
 
-TODO
+> Make sure to set up the OpenAI API key as described [here](#setting-up-api-keys) and RankGPT as
+> described [here](#rankgpt) before running this code.
 
 ## Reproducing paper results
 
 This part describe how to reproduce the results presented in our paper.
-
-### Setup
-
-1. Clone external dependencies:
-   ```bash
-   git clone https://github.com/mistralai/mistral-finetune.git
-   git clone https://github.com/hitz-zentroa/GoLLIE.git
-   ```
-2. Some experiments require an HuggingFace API key. Set it up by creating a file `huggingface_api_key` and put it there.
-   The code will automatically read the key from this file.
-3. In addition, make sure you have set up the OpenAI API key as described [here](#setting-up-the-openai-api
-   ).
 
 ### Recombination extraction
 
@@ -92,20 +130,19 @@ This part describe how to reproduce the results presented in our paper.
 5. Reproduce ScBERT-based token classifier results:
     * Download the model checkpoint from [huggingface](https://huggingface.co/noystl/scibert_token_classifier).
     * Adjust the `checkpoint` path in `scripts/extraction_experiments/run_token_classifier.sh` and run the script.
-6. We use [PURE](https://github.com/princeton-nlp/PURE) to train and run inference in a separate environment, as it
-   requires python 3.7 and isn't compatible with the rest of the code.
+6. We use the [PURE repository](https://github.com/princeton-nlp/PURE) to train and run inference for PURE in a separate
+   environment, as it requires python 3.7 and isn't compatible with the rest of the code.
 
 ### Knowledge base analysis
 
 Run the following to generate the tables and csv files used to create the analysis figures in the paper.
 
-```bash
-# Unzip the data
-unzip data/CHIMERA.zip -d data/
-
-chmod +x scripts/analyse_kb.sh
-./scripts/analyse_kb.sh
-````
+1. Unzip the data: `unzip data/CHIMERA.zip -d data/`
+2. Run the analysis script:
+   ```bash
+   chmod +x scripts/analyse_kb.sh
+   ./scripts/analyse_kb.sh
+   ```
 
 ### Prediction experiments
 
@@ -158,8 +195,8 @@ chmod +x scripts/analyse_kb.sh
      --perform_checkpoint_at 500
    ```
 
-   Note that we change adjust the RankGPT prompt locally, as described in the paper. Your results might vary slightly in
-   case you skip this step.
+   Note that we change adjust the RankGPT prompt locally, as described [here](#rankgpt). Your results might vary
+   slightly in case you skip this step.
 
 #### User study
 
