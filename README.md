@@ -152,10 +152,8 @@ Recombination extracted:
 ```
 
 ## Recombination prediction
-
-> **Important**: 
-> Make sure to set up the OpenAI API key as described [here](#setting-up-api-keys) and RankGPT as
-> described [here](#rankgpt) before running this code.
+**Important**: Make sure to set up the OpenAI API key as described [here](#setting-up-api-keys) and RankGPT as
+described [here](#rankgpt) before running this code.
 
 ## Reproducing paper results
 
