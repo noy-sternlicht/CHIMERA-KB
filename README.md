@@ -96,19 +96,65 @@ git clone https://github.com/hitz-zentroa/GoLLIE.git
 ```
 
 #### mistal-finetne
-We use [mistral-finetune](https://github.com/mistralai/mistral-finetune) to train our Mistral-based models. In case you want use our training code, you would have to clone the repository first as follows:
+
+We use [mistral-finetune](https://github.com/mistralai/mistral-finetune) to train our Mistral-based models. In case you
+want use our training code, you would have to clone the repository first as follows:
+
 ```bash
 https://github.com/mistralai/mistral-finetune.git
 ```
+
 and follow the repo setup instructions.
 
 ## Recombination extraction
 
-TODO
+1. Download Mistral base model weights from [huggingface](https://huggingface.co/noystl/mistral-base-model/tree/main).
+2. Download the LoRA checkpoint from [huggingface](https://huggingface.co/noystl/mistral-e2e).
+3. Run the extraction demo:
+   ```bash
+   python3 src/demo/recombination_extraction.py \
+    --input_path src/demo/extraction_input_example.txt \ # path to a text file containing the input abstract
+    --output_dir extraction_demo_out \
+    --base_model_path mistral_base_model \ # base model path
+    --extraction_model_path models/extraction_models/checkpoints/mistral_e2e # path to the LoRA checkpoint
+   ```
+
+`scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the abstract
+of [this paper](https://arxiv.org/abs/2407.15312):
+> Histopathological image classification constitutes a pivotal task in computer-aided diagnostics. The precise
+> identification and categorization of histopathological images are of paramount significance for early disease detection
+> and treatment. In the diagnostic process of pathologists, a multi-tiered approach is typically employed to assess
+> abnormalities in cell regions at different magnifications. However, feature extraction is often performed at a single
+> granularity, overlooking the multi-granular characteristics of cells. To address this issue, we propose the Fuzzy-guided
+> Multi-granularity Deep Neural Network (FMDNN). Inspired by the multi-granular diagnostic approach of pathologists, we
+> perform feature extraction on cell structures at coarse, medium, and fine granularity, enabling the model to fully
+> harness the information in histopathological images. We incorporate the theory of fuzzy logic to address the challenge
+> of redundant key information arising during multi-granular feature extraction. Cell features are described from
+> different perspectives using multiple fuzzy membership functions, which are fused to create universal fuzzy features. A
+> fuzzy-guided cross-attention module guides universal fuzzy features toward multi-granular features. We propagate these
+> features through an encoder to all patch tokens, aiming to achieve enhanced classification accuracy and robustness. In
+> experiments on multiple public datasets, our model exhibits a significant improvement in accuracy over commonly used
+> classification methods for histopathological image classification and shows commendable interpretability.
+
+And should result in the following output:
+```bash
+Recombination extracted:
+{
+  "type": "inspiration",
+  "entities": {
+    "inspiration-src": [
+      "the multi-granular diagnostic approach of pathologists"
+    ],
+    "inspiration-target": [
+      "Histopathological image classification"
+    ]
+  }
+}
+```
 
 ## Recombination prediction
 
-> Make sure to set up the OpenAI API key as described [here](#setting-up-api-keys) and RankGPT as
+> **Note**: Make sure to set up the OpenAI API key as described [here](#setting-up-api-keys) and RankGPT as
 > described [here](#rankgpt) before running this code.
 
 ## Reproducing paper results

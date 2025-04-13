@@ -8,6 +8,47 @@ from datetime import datetime
 from colorama import Fore, Style
 from openai import OpenAI
 
+PROMPT_E2E = """You are an AI assistant tasked with analyzing scientific abstracts for idea recombination. Your goal is to identify the most salient recombination in the given abstract and format it as a JSON string. Follow these instructions carefully:
+
+1. First, familiarize yourself with the possible entity types for recombinations:
+
+<entity_types>
+{ENTITY_TYPE_DESCRIPTIONS}
+</entity_types>
+
+2. Now, carefully read the following scientific abstract:
+
+<abstract>
+{TEXT}
+</abstract>
+
+3. Your task is to extract the most salient recombination from this abstract. A recombination can be either:
+   a) Combination: The authors combine two or more ideas, methods, models, techniques, or approaches to obtain a certain goal.
+   b) Inspiration: The authors draw inspiration or similarities from one concept, idea, problem, approach, or domain and implement it in another.
+
+4. After identifying the recombination, you will format it as a JSON string in the following structure:
+
+   <recombination>
+   {recombination_type: {entity_type_1: [ent_1, ent_2], entity_type_2: [ent_3],...}}
+   </recombination>
+
+   If you don't think the text discusses a recombination, or that the recombination is not a central part of the work, return an empty JSON object: {}.
+
+5. Before providing your final answer, use the following scratchpad to think through the process:
+
+   <scratchpad>
+   1. Identify the main ideas, methods, or approaches discussed in the abstract.
+   2. Determine if there is a clear combination of ideas or if one idea inspired the application in another domain.
+   3. Identify the specific entities involved in the recombination.
+   4. Classify the entities according to the provided entity types.
+   5. Determine the recombination type (combination or inspiration).
+   </scratchpad>
+
+6. Now, provide your final output in the specified JSON format. Ensure that the output is a valid JSON string. If the output is empty, return {}. Place your answer within <answer> tags.
+
+Remember to carefully analyze the abstract and only identify a recombination if it is clearly present and central to the work described."""
+
+
 
 
 NER_ENTITY_TYPES_ATTRIBUTES = [
