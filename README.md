@@ -6,6 +6,7 @@
 </p>
 
 ---
+
 ## The CHIMERA knowledge base
 
 CHIMERA is knowledge base of over 28K _real_ scientific recombination examples.
@@ -20,26 +21,28 @@ You are welcome to use CHIMERA to study recombination in science, develop new al
 Make sure to cite our paper as described [here](#Citation).
 
 ## Table of Contents
+
 <!-- TOC -->
-  * [Getting Started](#getting-started)
+
+* [Getting Started](#getting-started)
     * [Installation](#installation)
     * [Setting up API keys](#setting-up-api-keys)
     * [External dependencies](#external-dependencies)
-      * [RankGPT](#rankgpt)
-      * [GoLLIE](#gollie)
-      * [mistal-finetne](#mistal-finetne)
-  * [Demos](#demos)
+        * [RankGPT](#rankgpt)
+        * [GoLLIE](#gollie)
+        * [mistal-finetne](#mistal-finetne)
+* [Demos](#demos)
     * [Recombination extraction](#recombination-extraction)
     * [Recombination prediction](#recombination-prediction)
-  * [Reproducing paper results](#reproducing-paper-results)
+* [Reproducing paper results](#reproducing-paper-results)
     * [Recombination extraction](#recombination-extraction-1)
     * [Knowledge base analysis](#knowledge-base-analysis)
     * [Prediction experiments](#prediction-experiments)
-      * [User study](#user-study)
-  * [Citation](#citation)
-  * [Authors](#authors)
-<!-- TOC -->
+        * [User study](#user-study)
+* [Citation](#citation)
+* [Authors](#authors)
 
+<!-- TOC -->
 
 ## Getting Started
 
@@ -144,7 +147,6 @@ and follow the repo setup instructions.
 
 `scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the
 following [abstract](https://arxiv.org/abs/2407.15312):
-
 
 ![example](example_abstract.png)
 
@@ -318,13 +320,18 @@ Run the following to generate the tables and csv files used to create the analys
 
 #### User study
 
-1. Use `scripts/user_study_data_prep/run_user_study_baselines.sh` to rerun all user study
+We make the user study responses available in `data/user_study_results.csv`.
+Run `scripts/user_study/analyse_study_results.sh` to reproduce the results reported in the paper.
+
+To reproduce the study data (rerun additional prediction baselines):
+
+1. Use `scripts/user_study/run_user_study_baselines.sh` to rerun all user study
    baselines (except ours, see running instructions [here](#prediction-experiments)).
 2. Fill in the baselines results paths in `src/experiments/recombination_prediction/user_study/baselines_results.json`
-3. Run `scripts/user_study_data_prep/prep_user_study_data.sh` to prepare the user study data.
+3. Run `scripts/user_study/prep_user_study_data.sh` to prepare the user study data.
 
-We performed the study using a streamlit-built platform. The code for batching the data and assigning it to users, the
-annotation platform, and responses analysis is available [here](https://github.com/noy-sternlicht/myProject/tree/main).
+We performed the study using a streamlit-built platform. The code for batching the data, assigning it to users, and the
+annotation platform is available [here](https://github.com/noy-sternlicht/myProject/tree/main).
 
 ## Citation
 
