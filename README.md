@@ -119,8 +119,7 @@ and follow the repo setup instructions.
     --extraction_model_path models/extraction_models/checkpoints/mistral_e2e # path to the LoRA checkpoint
    ```
 
-`scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the abstract
-of [this paper](https://arxiv.org/abs/2407.15312):
+`scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the following [abstract](https://arxiv.org/abs/2407.15312):
 > Histopathological image classification constitutes a pivotal task in computer-aided diagnostics. The precise
 > identification and categorization of histopathological images are of paramount significance for early disease detection
 > and treatment. In the diagnostic process of pathologists, a multi-tiered approach is typically employed to assess
