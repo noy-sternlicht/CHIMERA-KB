@@ -95,6 +95,13 @@ it in case you want to reproduce our extraction experiment. In that case, simply
 git clone https://github.com/hitz-zentroa/GoLLIE.git
 ```
 
+#### mistal-finetne
+We use [mistral-finetune](https://github.com/mistralai/mistral-finetune) to train our Mistral-based models. In case you want use our training code, you would have to clone the repository first as follows:
+```bash
+https://github.com/mistralai/mistral-finetune.git
+```
+and follow the repo setup instructions.
+
 ## Recombination extraction
 
 TODO
