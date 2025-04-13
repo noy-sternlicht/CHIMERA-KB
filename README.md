@@ -123,23 +123,7 @@ and follow the repo setup instructions.
 
 `scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the
 following [abstract](https://arxiv.org/abs/2407.15312):
-> Histopathological image classification constitutes a pivotal task in computer-aided diagnostics. The precise
-> identification and categorization of histopathological images are of paramount significance for early disease
-> detection
-> and treatment. In the diagnostic process of pathologists, a multi-tiered approach is typically employed to assess
-> abnormalities in cell regions at different magnifications. However, feature extraction is often performed at a single
-> granularity, overlooking the multi-granular characteristics of cells. To address this issue, we propose the
-> Fuzzy-guided
-> Multi-granularity Deep Neural Network (FMDNN). Inspired by the multi-granular diagnostic approach of pathologists, we
-> perform feature extraction on cell structures at coarse, medium, and fine granularity, enabling the model to fully
-> harness the information in histopathological images. We incorporate the theory of fuzzy logic to address the challenge
-> of redundant key information arising during multi-granular feature extraction. Cell features are described from
-> different perspectives using multiple fuzzy membership functions, which are fused to create universal fuzzy features.
-> A
-> fuzzy-guided cross-attention module guides universal fuzzy features toward multi-granular features. We propagate these
-> features through an encoder to all patch tokens, aiming to achieve enhanced classification accuracy and robustness. In
-> experiments on multiple public datasets, our model exhibits a significant improvement in accuracy over commonly used
-> classification methods for histopathological image classification and shows commendable interpretability.
+![example](example_abstract.png)
 
 And should result in the following output:
 
@@ -168,9 +152,10 @@ described [here](#rankgpt) before running this code.
 2. Set your input. We provide a default input file in `src/demo/prediction_demo_example.json` that contains the
    following example:
     ```text
-      "context": "The need for improved factuality in scientific summarization is evident, as existing methods may not
-                  adequately address the accuracy of statements. This highlights a gap in the ability to effectively
-                  refine summaries through feedback mechanisms that incorporate both positive and negative information.",
+      "context": "The need for improved factuality in scientific summarization is evident,
+                  as existing methods may not adequately address the accuracy of statements.
+                  This highlights a gap in the ability to effectively refine summaries through
+                  feedback mechanisms that incorporate both positive and negative information.",
       "recombination_type": "inspiration",
       "anchor": "A scientific summarization method"
     ```
@@ -190,9 +175,10 @@ The output for the default input should look like this:
 
 ```text
 ============QUERY============
-The need for improved factuality in scientific summarization is evident, as existing methods may not adequately address
-the accuracy of statements. This highlights a gap in the ability to effectively refine summaries through feedback
-mechanisms that incorporate both positive and negative information.
+The need for improved factuality in scientific summarization is evident, as existing methods
+may not adequately address the accuracy of statements. This highlights a gap in the ability
+to effectively refine summaries through feedback mechanisms that incorporate both positive
+and negative information.
 
 What would be a good source of inspiration for "A scientific summarization method"?
 ============TOP-10-SUGGESTIONS============
