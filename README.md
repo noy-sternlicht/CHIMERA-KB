@@ -6,7 +6,6 @@
 </p>
 
 ---
-
 ## The CHIMERA knowledge base
 
 CHIMERA is knowledge base of over 28K _real_ scientific recombination examples.
@@ -19,6 +18,28 @@ We build CHIMERA by automatically extracting examples of "recombination in actio
 
 You are welcome to use CHIMERA to study recombination in science, develop new algorithms, or for any other purpose!
 Make sure to cite our paper as described [here](#Citation).
+
+## Table of Contents
+<!-- TOC -->
+  * [Getting Started](#getting-started)
+    * [Installation](#installation)
+    * [Setting up API keys](#setting-up-api-keys)
+    * [External dependencies](#external-dependencies)
+      * [RankGPT](#rankgpt)
+      * [GoLLIE](#gollie)
+      * [mistal-finetne](#mistal-finetne)
+  * [Demos](#demos)
+    * [Recombination extraction](#recombination-extraction)
+    * [Recombination prediction](#recombination-prediction)
+  * [Reproducing paper results](#reproducing-paper-results)
+    * [Recombination extraction](#recombination-extraction-1)
+    * [Knowledge base analysis](#knowledge-base-analysis)
+    * [Prediction experiments](#prediction-experiments)
+      * [User study](#user-study)
+  * [Citation](#citation)
+  * [Authors](#authors)
+<!-- TOC -->
+
 
 ## Getting Started
 
