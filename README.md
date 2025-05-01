@@ -331,7 +331,7 @@ To reproduce the study data (rerun additional prediction baselines):
 3. Run `scripts/user_study/prep_user_study_data.sh` to prepare the user study data.
 
 We performed the study using a streamlit-built platform. The code for batching the data, assigning it to users, and the
-annotation platform is available [here](https://github.com/noy-sternlicht/myProject/tree/main).
+annotation platform is available in `src/user_study`.
 
 ## Citation
 

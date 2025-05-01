@@ -1,0 +1,11 @@
+{
+  "key": "<your_airtable_key>",
+  "annotation_table": {
+    "base_id": "<your_base_id>",
+    "table_name": "<your_table_name>"
+  },
+  "batches_table": {
+    "base_id": "<your_base_id>",
+    "table_name": "<your_table_name>"
+  }
+}

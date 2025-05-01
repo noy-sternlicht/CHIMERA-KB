@@ -1,0 +1,35 @@
+{
+  "users_expertise": {
+    "user-id1": {
+      "arxiv_categories": [
+        "cs.cl",
+        "cs.ai"
+      ],
+      "research_areas": "area1, area2, area3, area4, area5",
+      "nr_batches": 1
+    },
+    "user-id2": {
+      "arxiv_categories": [
+        "cs.cl",
+        "cs.ai",
+        "cs.lg",
+        "cs.ro",
+        "cs.cv",
+        "cs.cy",
+        "cs.hc",
+        "cs.ir",
+        "cs.si"
+      ],
+      "research_areas": "area1, area2, area3, area4, area5",
+      "nr_batches": 1
+    },
+    "user-id3": {
+      "arxiv_categories": [
+        "cs.ai",
+        "cs.lg"
+      ],
+      "research_areas": "area1, area2, area3, area4, area5",
+      "nr_batches": 1
+    }
+  }
+}
