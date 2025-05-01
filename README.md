@@ -151,7 +151,7 @@ following [abstract](https://arxiv.org/abs/2407.15312):
 
 
 <p align="center">
-  <img src="example_abstract.png" alt="Centered Image" width="1300" />
+  <img src="example_abstract.png"  width="1500" />
 </p>
 
 And should result in the following output:
