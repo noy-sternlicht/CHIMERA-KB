@@ -226,7 +226,7 @@ Please see the [reproduction section](#prediction-experiments) to reproduce our 
 
 ## Reproducing paper results
 
-This part describe how to reproduce the results presented in our paper.
+This part describe how to reproduce the results presented in our paper. **Checkpoints would become available upon publication.**
 
 ### Recombination extraction
 
