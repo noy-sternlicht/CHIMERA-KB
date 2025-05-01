@@ -148,7 +148,7 @@ and follow the repo setup instructions.
 `scripts/run_extraction_demo.sh` would run the demo with a default input file, containing the
 following [abstract](https://arxiv.org/abs/2407.15312):
 
-![example](example_abstract.png)
+![example](example_abstract.png, width=400)
 
 And should result in the following output:
 
