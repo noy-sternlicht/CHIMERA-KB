@@ -124,6 +124,56 @@ def get_common_inspiration_sources_of_domains(all_relations,
     return results
 
 
+def domain_temporal_analysis(all_relations, domain='cs.cl', domain_mode='target', include_other_nodes=False):
+    if not include_other_nodes:
+        all_relations = all_relations[all_relations['source_domain'] != 'other']
+        all_relations = all_relations[all_relations['target_domain'] != 'other']
+
+    domain_role = 'source_domain' if domain_mode == 'source' else 'target_domain'
+    analysed_role = 'target_domain' if domain_mode == 'source' else 'source_domain'
+    unique_years = all_relations['publication_year'].unique()
+    unique_years.sort()
+    results = []
+    for year in unique_years:
+        year_edges = all_relations[all_relations['publication_year'] == year]
+        year_inspirations = year_edges[year_edges['relation'] == 'inspiration']
+        year_inspirations = year_inspirations[year_inspirations[domain_role] == domain]
+        year_inspirations = year_inspirations[
+            year_inspirations[analysed_role] != domain]
+        recomb_domains_histogram = year_inspirations[analysed_role].value_counts().to_dict()
+        total_edges = len(year_inspirations)
+        domain_ratios = {}
+        for key, count in recomb_domains_histogram.items():
+            domain_ratios[key] = count / total_edges
+
+        year_results = {'year': str(year)}
+        for key, ratio in domain_ratios.items():
+            year_results[key] = ratio * 100
+
+        results.append(year_results)
+
+    all_domains = set()
+    for year_result in results:
+        all_domains.update(year_result.keys())
+
+    normalized_results = []
+    for year_result in results:
+        normalized_result = {'year': year_result['year']}
+        for domain in all_domains:
+            if domain in year_result:
+                normalized_result[domain] = year_result[domain]
+            else:
+                normalized_result[domain] = 0
+        normalized_results.append(normalized_result)
+
+    normalized_df = pd.DataFrame(normalized_results)
+    normalized_df.set_index(['year'], inplace=True)
+    top_cols = normalized_df.sum().nlargest(5).index
+    normalized_df = normalized_df[top_cols]
+    normalized_df = normalized_df.round(2)
+
+    return normalized_df
+
 
 def main():
     data_path = args.data_path
@@ -176,8 +226,13 @@ def main():
                                                               f'common_inspiration_sources_{source_domain}.csv')
         domain_data.to_csv(common_inspiration_sources_output_path, index=False)
         logger.info(f'Common inspiration sources for {source_domain} saved to {common_inspiration_sources_output_path}')
-    logger.info(stats_str)
 
+    temporal_analysis = domain_temporal_analysis(all_relations)
+    temporal_analysis_output_path = os.path.join(args.output_path, 'temporal_analysis.csv')
+    temporal_analysis.to_csv(temporal_analysis_output_path)
+    logger.info(f'Temporal analysis saved to {temporal_analysis_output_path}')
+
+    logger.info(stats_str)
 
 
 if __name__ == '__main__':
