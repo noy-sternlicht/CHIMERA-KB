@@ -1,9 +1,6 @@
 <p align="center">
   <img src="kb_logo.svg" alt="Centered Image" width="450" />
 </p>
-<p align="center">
-    <a href="XXX" target="_blank">Website</a> | <a href="xxx" target="_blank">Paper</a> | <a href="xxx" target="_blank">Data</a> <br>
-</p>
 
 ---
 
