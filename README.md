@@ -356,5 +356,5 @@ If you use this code or data in your research, please cite our paper:
 
 ## Authors
 
-* [Noy Sternlicht](https://x.com/NoySternlicht)
+* [Noy Sternlicht](https://noy-sternlicht.github.io)
 * [Tom Hope](https://tomhoper.github.io/)
