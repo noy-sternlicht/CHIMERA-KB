@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-<a href="https://noy-sternlicht.github.io/CHIMERA-Web" target="_blank">Project</a> | <a href="https://arxiv.org/abs/2505.20779" target="_blank">Paper</a> | <a href="https://github.cs.huji.ac.il/tomhope-lab/CHIMERA/tree/main/data" target="_blank">Data</a> <br>
+<a href="https://noy-sternlicht.github.io/CHIMERA-Web" target="_blank">Project</a> | <a href="https://arxiv.org/abs/2505.20779" target="_blank">Paper</a> | <a href="https://github.com/noy-sternlicht/CHIMERA-KB/tree/main/data" target="_blank">Data</a> <br>
 </p>
 
 ---
