@@ -1,8 +1,12 @@
-[![Arxiv](https://img.shields.io/badge/Arxiv-YYMM.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://put-here-your-paper.com)
+[![Arxiv](https://img.shields.io/badge/Arxiv-2505.20779-red?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2505.20779)
 [![Python Versions](https://img.shields.io/badge/Python-3.11-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 
 <p align="center">
   <img src="kb_logo.svg" alt="Centered Image" width="450" />
+</p>
+
+<p align="center">
+<a href="https://noy-sternlicht.github.io/CHIMERA-Web" target="_blank">Project</a> | <a href="https://arxiv.org/abs/2505.20779" target="_blank">Paper</a> | <a href="https://github.cs.huji.ac.il/tomhope-lab/CHIMERA/tree/main/data" target="_blank">Data</a> <br>
 </p>
 
 ---
@@ -342,15 +346,14 @@ annotation platform is available in `src/user_study`.
 If you use this code or data in your research, please cite our paper:
 
 ```bibtex
-@article{author2025paper,
-  title={Paper Title},
-  author={Last, First and Coauthor, Another},
-  journal={Journal Name},
-  volume={X},
-  number={Y},
-  pages={ZZ--ZZ},
-  year={2025},
-  publisher={Publisher}
+@misc{sternlicht2025chimeraknowledgebaseidea,
+      title={CHIMERA: A Knowledge Base of Idea Recombination in Scientific Literature}, 
+      author={Noy Sternlicht and Tom Hope},
+      year={2025},
+      eprint={2505.20779},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2505.20779}, 
 }
 ```
 
