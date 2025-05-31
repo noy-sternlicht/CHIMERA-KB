@@ -27,7 +27,7 @@ Make sure to cite our paper as described [here](#Citation).
 ## Table of Contents
 
 <!-- TOC -->
-
+* [Updates](#updates)
 * [Getting Started](#getting-started)
     * [Installation](#installation)
     * [Setting up API keys](#setting-up-api-keys)
@@ -47,6 +47,11 @@ Make sure to cite our paper as described [here](#Citation).
 * [Authors](#authors)
 
 <!-- TOC -->
+
+## Updates
+* **2025-05-31**: The CHIMERA dataset is now available on Huggingface! We provide the raw edges of the dataset, as well as a
+  processed version used for recombination prediction. You can find them [here](https://huggingface.co/datasets/noystl/CHIMERA)
+  and [here](https://huggingface.co/datasets/noystl/Recombination-Pred) respectively 🤗
 
 ## Getting Started
 
