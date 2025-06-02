@@ -49,10 +49,12 @@ Make sure to cite our paper as described [here](#Citation).
 <!-- TOC -->
 
 ## Updates
-* **2025-05-31**: The CHIMERA dataset is now available on Huggingface! We provide the raw edges of the dataset, as well as a
-  processed version used for recombination prediction. You can find them [here](https://huggingface.co/datasets/noystl/CHIMERA)
-  and [here](https://huggingface.co/datasets/noystl/Recombination-Pred) respectively 🤗
-
+* **2025-06-02**: We now provide our data on Huggingface 🤗
+  * [CHIMERA dataset](https://huggingface.co/datasets/noystl/CHIMERA): Raw edges of the CHIMERA dataset.
+  * [Recombination prediction dataset](https://huggingface.co/datasets/noystl/Recombination-Pred): Contextualized edges (+ context string and leak detection) for recombination prediction.
+  * [Recombination extraction dataset](https://huggingface.co/datasets/noystl/Recombination-Extraction): Human annotated recombination examples. 
+  
+  ⚠️ Please note that we use the terms **combination** and **blend** interchangeably. The same is true for **inspiration** and **analogy**.
 ## Getting Started
 
 A quick start guide to get you up and running with the code.
