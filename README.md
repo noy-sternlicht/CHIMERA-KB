@@ -28,6 +28,7 @@ Make sure to cite our paper as described [here](#Citation).
 
 <!-- TOC -->
 * [Updates](#updates)
+* [HuggingFace Repositories](#huggingface-repositories)
 * [Getting Started](#getting-started)
     * [Installation](#installation)
     * [Setting up API keys](#setting-up-api-keys)
@@ -49,12 +50,22 @@ Make sure to cite our paper as described [here](#Citation).
 <!-- TOC -->
 
 ## Updates
+* **2026-04-12**: Our paper has been accepted to **ACL 2026**! 🎉
 * **2025-06-02**: Our data is now available on Huggingface 🤗
   * [CHIMERA dataset](https://huggingface.co/datasets/noystl/CHIMERA): Raw edges of the CHIMERA dataset.
   * [Recombination prediction dataset](https://huggingface.co/datasets/noystl/Recombination-Pred): Contextualized edges (+ context string and leak detection) for recombination prediction.
   * [Recombination extraction dataset](https://huggingface.co/datasets/noystl/Recombination-Extraction): Human annotated recombination examples. 
   
   ⚠️ Please note that we use the terms **combination** and **blend** interchangeably. The same is true for **inspiration** and **analogy**.
+
+## HuggingFace Repositories
+
+| Collection | Description |
+|---|---|
+| [chimera-data](https://huggingface.co/collections/noystl/chimera-data) | CHIMERA datasets (knowledge base, prediction, and extraction) |
+| [chimera-prediction-models](https://huggingface.co/collections/noystl/chimera-prediction-models) | Fine-tuned bi-encoders for recombination prediction |
+| [chimera-extraction-models](https://huggingface.co/collections/noystl/chimera-extraction-models) | Fine-tuned models for recombination extraction from scientific abstracts |
+
 ## Getting Started
 
 A quick start guide to get you up and running with the code.
