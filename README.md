@@ -58,7 +58,7 @@ Make sure to cite our paper as described [here](#Citation).
   
   ⚠️ Please note that we use the terms **combination** and **blend** interchangeably. The same is true for **inspiration** and **analogy**.
 
-## HuggingFace Repositories
+## 🤗 HuggingFace Repositories
 
 | Collection | Description |
 |---|---|
