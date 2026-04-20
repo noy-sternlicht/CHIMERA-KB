@@ -6,3 +6,4 @@ models/extraction_models
 huggingface_api_key
 data/CHIMERA
 data/recombination_prediction_data
+output/

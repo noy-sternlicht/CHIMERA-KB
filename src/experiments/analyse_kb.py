@@ -1,8 +1,154 @@
 import argparse
+import json
 import os.path
+import re
 
 from util import setup_default_logger
 import pandas as pd
+
+
+def filter_recombination_relations(df: pd.DataFrame) -> pd.DataFrame:
+    """Keep only inspiration / combination rows."""
+    filtered = df[df['relation'].isin(['inspiration', 'combination'])].copy()
+    logger.info(
+        f'After relation filter: {len(filtered):,} rows '
+        f'(dropped {len(df) - len(filtered):,})'
+    )
+    return filtered
+
+
+# ── Keyword analysis ──────────────────────────────────────────────────────────
+
+def load_keywords(keywords_path: str) -> list:
+    with open(keywords_path) as fh:
+        return [ln.strip().lower() for ln in fh if ln.strip() and not ln.startswith('#')]
+
+
+def keyword_histogram(df: pd.DataFrame, keywords: list) -> pd.Series:
+    """Count how many abstracts contain each keyword (case-insensitive substring match)."""
+    counts = {kw: 0 for kw in keywords}
+    for abstract in df['abstract'].dropna():
+        abstract_lower = abstract.lower()
+        for kw in keywords:
+            if kw in abstract_lower:
+                counts[kw] += 1
+    return pd.Series(counts).sort_values(ascending=False)
+
+
+def load_keyword_categories(categories_path: str) -> dict:
+    with open(categories_path) as fh:
+        return {k: [kw.lower() for kw in v] for k, v in json.load(fh).items()}
+
+
+def keyword_category_histogram(df: pd.DataFrame, categories: dict) -> pd.Series:
+    """Count how many abstracts match each category (any keyword in the group, case-insensitive)."""
+    counts = {}
+    for category, keywords in categories.items():
+        count = 0
+        for abstract in df['abstract'].dropna():
+            abstract_lower = abstract.lower()
+            if any(kw in abstract_lower for kw in keywords):
+                count += 1
+        counts[category] = count
+    return pd.Series(counts).sort_values(ascending=False)
+
+
+def keyword_category_histogram_latex(hist: pd.Series, categories: dict) -> str:
+    lines = [
+        r'\begin{tabular}{llr}',
+        r'\toprule',
+        r'\textbf{Category} & \textbf{Keywords} & \textbf{\#} \\',
+        r'\midrule',
+    ]
+    for category, count in hist.items():
+        keywords = categories.get(category, [])
+        kw_str = ', '.join(keywords)
+        lines.append(f'{category} & {kw_str} & {count:,} \\\\')
+    lines += [r'\bottomrule', r'\end{tabular}']
+    return '\n'.join(lines)
+
+
+def keyword_histogram_latex(hist: pd.Series, top_n: int = 30) -> str:
+    top = hist.head(top_n)
+    half = top_n // 2
+    left = list(top.items())[:half]
+    right = list(top.items())[half:top_n]
+
+    lines = [
+        r'\begin{tabular}{lrlr}',
+        r'\toprule',
+        r'\textbf{Keyword} & \textbf{\#} & \textbf{Keyword} & \textbf{\#} \\',
+        r'\midrule',
+    ]
+    for (kw_l, cnt_l), (kw_r, cnt_r) in zip(left, right):
+        lines.append(
+            f'{kw_l} & {cnt_l:,} & {kw_r} & {cnt_r:,} \\\\'
+        )
+    lines += [r'\bottomrule', r'\end{tabular}']
+    return '\n'.join(lines)
+
+
+# ── MD report for zero-keyword abstracts ──────────────────────────────────────
+
+def generate_no_keyword_report(df: pd.DataFrame, keywords: list, output_path: str,
+                               chunk_size: int = 500) -> tuple:
+    keyword_set = set(keywords)
+
+    no_kw_rows = [
+        row for _, row in df.iterrows()
+        if not any(kw in str(row.get('abstract', '')).lower() for kw in keyword_set)
+    ]
+
+    total = len(no_kw_rows)
+    n_chunks = max(1, (total + chunk_size - 1) // chunk_size)
+    report_dir = os.path.join(output_path, 'no_keyword_abstracts')
+    os.makedirs(report_dir, exist_ok=True)
+
+    written_paths = []
+    for chunk_idx in range(n_chunks):
+        chunk = no_kw_rows[chunk_idx * chunk_size:(chunk_idx + 1) * chunk_size]
+        global_offset = chunk_idx * chunk_size
+
+        lines = [
+            '# Abstracts With No Combination Keyword\n\n',
+            f'**Total papers with no keyword match:** {total}'
+            f' / {len(df)} ({100 * total / max(len(df), 1):.1f} %)'
+            f'  —  part {chunk_idx + 1} of {n_chunks}\n\n',
+            '---\n\n',
+        ]
+
+        for i, row in enumerate(chunk):
+            paper_id = row.get('paper_id', 'N/A')
+            relation = str(row.get('relation', '?')).capitalize()
+            year = row.get('publication_year', '?')
+            abstract = str(row.get('abstract', ''))
+            src_text = row.get('source_text', '?')
+            tgt_text = row.get('target_text', '?')
+            src_dom = row.get('source_domain', '?')
+            tgt_dom = row.get('target_domain', '?')
+
+            for entity in sorted([src_text, tgt_text], key=len, reverse=True):
+                if entity and entity != '?':
+                    abstract = re.sub(re.escape(entity), f'**{entity}**', abstract, flags=re.IGNORECASE)
+
+            lines += [
+                f'## {global_offset + i + 1}. {relation} — `{paper_id}` ({year})\n\n',
+                f'### Abstract\n\n{abstract}\n\n',
+                f'### Extracted Recombination\n\n',
+                f'| Field | Value |\n',
+                f'|---|---|\n',
+                f'| Relation | `{relation}` |\n',
+                f'| Source | `{src_text}` ({src_dom}) |\n',
+                f'| Target | `{tgt_text}` ({tgt_dom}) |\n\n',
+                '---\n\n',
+            ]
+
+        part_path = os.path.join(report_dir, f'part_{chunk_idx + 1:03d}.md')
+        with open(part_path, 'w') as fh:
+            fh.writelines(lines)
+        written_paths.append(part_path)
+
+    return report_dir, total
 
 
 def domain_comparison(row):
@@ -179,6 +325,46 @@ def main():
     data_path = args.data_path
     relations_path = os.path.join(data_path, 'raw_edges.csv')
     all_relations = pd.read_csv(relations_path)
+
+
+    # ── Keyword histogram + no-keyword MD report ──────────────────────────────
+    all_relations = filter_recombination_relations(all_relations)
+
+    keywords_path = args.keywords_path
+    if os.path.exists(keywords_path):
+        keywords = load_keywords(keywords_path)
+        if keywords:
+            hist = keyword_histogram(all_relations, keywords)
+            hist_path = os.path.join(args.output_path, 'keyword_histogram.csv')
+            hist.to_csv(hist_path, header=['count'])
+            logger.info(f'Keyword histogram saved to {hist_path}')
+            logger.info(f'Top-20 keywords (LaTeX):\n{keyword_histogram_latex(hist)}')
+
+            report_dir, n_no_kw = generate_no_keyword_report(all_relations, keywords, args.output_path)
+            logger.info(
+                f'No-keyword MD report: {report_dir}  '
+                f'({n_no_kw:,} papers with no keyword match)'
+            )
+        else:
+            logger.warning(f'Keywords file {keywords_path} is empty — skipping keyword analysis')
+    else:
+        logger.warning(f'Keywords file not found: {keywords_path} — skipping keyword analysis')
+
+    categories_path = args.keywords_categories_path
+    if os.path.exists(categories_path):
+        categories = load_keyword_categories(categories_path)
+        if categories:
+            cat_hist = keyword_category_histogram(all_relations, categories)
+            cat_hist_path = os.path.join(args.output_path, 'keyword_category_histogram.csv')
+            cat_hist.to_csv(cat_hist_path, header=['count'])
+            logger.info(f'Keyword category histogram saved to {cat_hist_path}')
+            logger.info(f'Keyword category histogram (LaTeX):\n{keyword_category_histogram_latex(cat_hist, categories)}')
+        else:
+            logger.warning(f'Categories file {categories_path} is empty — skipping category analysis')
+    else:
+        logger.warning(f'Categories file not found: {categories_path} — skipping category analysis')
+
+
     all_relations.dropna(subset=['publication_year'], inplace=True)
     all_relations = all_relations[all_relations['publication_year'] != "other"]
     all_relations['publication_year'] = all_relations['publication_year'].astype(int)
@@ -243,6 +429,12 @@ if __name__ == '__main__':
     parser.add_argument('--max-year', type=int, help='Maximum year for papers')
     parser.add_argument('--pair_count_percentile', type=float, help='Minimum pair count for sankey diagram')
     parser.add_argument('--entity_count_percentile', type=float, help='Minimum entity count for sankey diagram')
+    parser.add_argument('--keywords-path', type=str,
+                        default='recombination_keywords.txt',
+                        help='Path to combination keywords file (one keyword per line)')
+    parser.add_argument('--keywords-categories-path', type=str,
+                        default='key_words_lexical_categories.json',
+                        help='Path to keyword lexical categories JSON file')
     args = parser.parse_args()
 
     logger = setup_default_logger(args.output_path)
