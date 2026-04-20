@@ -1,0 +1,65 @@
+You are an expert scientific editor. Your task is to review the entities of an already-extracted recombination record and improve them when necessary.
+
+The recombination was extracted from the following scientific abstract:
+
+<abstract>
+    {{ abstract }}
+</abstract>
+
+The current recombination record is:
+
+<recombination>
+    {{ recombination | tojson(indent=2) }}
+</recombination>
+
+---
+
+**Instructions**
+
+The recombination type is **{{ recombination.type }}**.
+
+{% if recombination.type == "combination" %}
+    Combination refers to the fusion of multiple concepts–such as methods, models, or theories–into a new solution or framework.
+
+    The record you received contains the following entity field:
+    - `comb-element`: the idea, method, model, or technique that is combined.
+
+{% elif recombination.type == "inspiration" %}
+    Inspiration refers to transferring knowledge or insight from one entity (the source) to another (the target). This
+    transfer may be realized through analogies, abstraction, or more general links to influential prior work.
+
+    The record you received contains the following entity fields:
+    - `inspiration-src`: the concept, domain, method, or phenomenon that serves as the source of inspiration.
+    - `inspiration-target`: the concept, domain, problem, or system to which the inspiration is applied.
+
+{% endif %}
+---
+
+**Output format**
+
+Return **only** a valid JSON object with the same structure as the input `recombination` record (same keys, same nesting), but with the entity strings replaced by your versions. Do not include any explanation outside the JSON object.
+
+{% if recombination.type == "combination" %}
+Example output shape:
+{
+  "type": "combination",
+  "entities": {
+    "comb-element": [
+      "<description of element 1>",
+      "<description of element 2>"
+    ]
+  }
+}
+{% elif recombination.type == "inspiration" %}
+Example output shape:
+{
+  "type": "inspiration",
+  "entities": {
+    "inspiration-src": ["<source description>"],
+    "inspiration-target": ["<target description>"]
+  }
+}
+{% endif %}
+
+
+
