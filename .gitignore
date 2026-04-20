@@ -7,3 +7,4 @@ huggingface_api_key
 data/CHIMERA
 data/recombination_prediction_data
 output/
+**/__pycache__/
