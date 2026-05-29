@@ -53,8 +53,6 @@ Make sure to cite our paper as described [here](#Citation).
 * **2026-04-12**: Our paper has been accepted to **ACL 2026**! 🎉
 * **2025-06-02**: Our data is now available on Huggingface 🤗
   * [CHIMERA](https://huggingface.co/datasets/noystl/CHIMERA)
-  ⚠️ Please note that we use the terms **combination** and **blend** interchangeably. The same is true for **inspiration** and **analogy**.
-
 ## 🤗 HuggingFace Repositories
 
 | Collection | Description |
