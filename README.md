@@ -50,9 +50,11 @@ Make sure to cite our paper as described [here](#Citation).
 <!-- TOC -->
 
 ## Updates
-* **2026-04-12**: Our paper has been accepted to **ACL 2026**! 🎉
+* **2026-04-12**: Our paper has been accepted to **ACL 2026** (main conference)! 🎉
 * **2025-06-02**: Our data is now available on Huggingface 🤗
-  * [CHIMERA](https://huggingface.co/datasets/noystl/CHIMERA)
+  * [CHIMERA](https://huggingface.co/datasets/noystl/CHIMERA) - Raw edges of the CHIMERA KB.
+  * [Recombination-Pred](https://huggingface.co/datasets/noystl/Recombination-Pred) - A version of CHIMERA for the recombination prediction task (with train/valid/test splits, problem context, and leakage detection).
+
 ## 🤗 HuggingFace Repositories
 
 | Collection | Description |
