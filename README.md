@@ -361,10 +361,10 @@ annotation platform is available in `src/user_study`.
 If you use this code or data in your research, please cite our paper:
 
 ```bibtex
-@misc{sternlicht2025chimeraknowledgebaseidea,
-      title={CHIMERA: A Knowledge Base of Idea Recombination in Scientific Literature}, 
+@misc{sternlicht2026chimeraknowledgebasescientific,
+      title={CHIMERA: A Knowledge Base of Scientific Idea Recombinations for Research Analysis and Ideation}, 
       author={Noy Sternlicht and Tom Hope},
-      year={2025},
+      year={2026},
       eprint={2505.20779},
       archivePrefix={arXiv},
       primaryClass={cs.CL},
